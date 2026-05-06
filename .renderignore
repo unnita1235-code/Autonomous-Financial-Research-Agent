@@ -1,0 +1,12 @@
+.env
+.env.local
+frontend/
+__pycache__/
+.pytest_cache/
+.deepeval/
+memory/faiss_index.bin
+memory/metadata.json
+memory/tfidf_vectorizer.pkl
+tests/
+*.pyc
+node_modules/
