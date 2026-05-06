@@ -11,3 +11,7 @@ uvicorn
 python-multipart
 python-dotenv
 psycopg2-binary
+slowapi
+groq
+sqlalchemy
+jinja2
