@@ -8,6 +8,7 @@ from .circuitbreaker import CircuitBreaker
 from .queryanalyzer import QueryAnalyzer
 from .disambiguation import resolve_ambiguity, extract_potential_tickers
 from security.prompt_injection_shield import shield
+from memory.episodic import EpisodicMemory
 
 logger = logging.getLogger(__name__)
 cb = CircuitBreaker(failure_threshold=3, recovery_timeout=60)
@@ -15,15 +16,16 @@ cb = CircuitBreaker(failure_threshold=3, recovery_timeout=60)
 class FinancialAgent:
     """
     High-level wrapper for the autonomous financial research agent.
-    Integrates query analysis, disambiguation, and the ReAct loop.
+    Integrates query analysis, disambiguation, and the 3-layer memory system.
     """
     def __init__(self, model_name: Optional[str] = None):
         self.llm_client = LLMClient(model=model_name)
         self.analyzer = QueryAnalyzer()
+        self.episodic_memory = EpisodicMemory()
 
     async def execute_research(self, query: str, vector_store: Optional[Any] = None) -> Dict[str, Any]:
         """
-        Executes a research task with pre-processing and the ReAct loop.
+        Executes a research task with 3-layer memory integration.
         """
         if not cb.can_execute():
             return {"status": "error", "message": "Circuit breaker is open. System cooling down."}
@@ -41,15 +43,29 @@ class FinancialAgent:
                 potential = extract_potential_tickers(query)
                 query = await resolve_ambiguity(query, potential)
 
-            # 3. Run ReAct Loop
+            # 3. Retrieve Layer 3 (Episodic) Context
+            episodic_context = self.episodic_memory.get_relevant_lessons(query)
+            logger.info(f"Retrieved episodic context: {episodic_context[:100]}...")
+
+            # 4. Run ReAct Loop
             logger.info(f"Executing agent loop for: {query}")
             result = await run_agent(
                 query=query,
                 tool_registry=TOOL_REGISTRY,
                 llm_client=self.llm_client,
-                vector_store=vector_store
+                vector_store=vector_store,
+                episodic_context=episodic_context
             )
             
+            # 5. Save Episode to Layer 3
+            if result.get("status") == "success":
+                self.episodic_memory.save_episode(
+                    query=query,
+                    strategy=result.get("tools_used", []),
+                    outcome=result.get("summary", "Success"),
+                    lessons=result.get("lessons", "Standard path successful.")
+                )
+
             cb.record_success()
             return result
 

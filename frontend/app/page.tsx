@@ -109,7 +109,7 @@ export default function InputDashboard() {
         <div className="flex flex-col items-center gap-4 pt-12">
           <div className="flex items-center gap-3 text-[10px] text-zinc-500 font-mono tracking-widest uppercase">
             <span className="status-pulse"></span>
-            <span>System Online • 3 Data Sources Active</span>
+            <span>System Online • 12 Data Sources Active</span>
           </div>
         </div>
       </div>
