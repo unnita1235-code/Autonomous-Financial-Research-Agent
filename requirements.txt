@@ -16,3 +16,4 @@ groq
 sqlalchemy
 jinja2
 google-generativeai
+yfinance
