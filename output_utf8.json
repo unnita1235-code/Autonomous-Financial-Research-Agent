@@ -1,0 +1,80 @@
+﻿Step 2: Sending POST request to start research...
+Response: {'success': True, 'data': {'job_id': 'd3f0ca8a-191d-463d-a8b7-4f98fee561ce', 'message': 'Research job queued successfully.'}, 'error': None}
+
+Step 3: Polling for status...
+Status: running
+Status: complete
+
+Step 4: Fetching final report...
+
+FULL raw JSON report output:
+{
+  "success": true,
+  "data": {
+    "report_id": "5fbcc1d6-e235-4d06-9595-32ed110f60c6",
+    "ticker": "AAPL",
+    "query": "Analyze Apple Q3 2024 performance",
+    "created_at": "2026-05-06T06:10:59.673170+00:00",
+    "sections": {
+      "executive_summary": {
+        "content": "Executive Summary: \nOur research report on AAPL is based on data with a confidence level of 70%, sourced from Sec Edgar. Key financial metrics include revenue of $111.2B, net income of $29.6B, and earnings per share (EPS) of $2.02. Additionally, the sentiment score is $1.00, as reported by news sources with a 70% confidence level. Notably, 0 data conflicts were detected in our analysis. The overall synthesis quality of this report is 70%. These findings provide a factual overview of AAPL's financial performance, based on available data with the specified confidence levels.",
+        "data_quality": "medium"
+      },
+      "financial_metrics": {
+        "content": "4 metrics extracted and reconciled.",
+        "rows": [
+          {
+            "metric": "Eps",
+            "value": "$2.02",
+            "source": "Sec Edgar",
+            "confidence": "70%"
+          },
+          {
+            "metric": "Net Income",
+            "value": "$29.6B",
+            "source": "Sec Edgar",
+            "confidence": "70%"
+          },
+          {
+            "metric": "Revenue",
+            "value": "$111.2B",
+            "source": "Sec Edgar",
+            "confidence": "70%"
+          },
+          {
+            "metric": "Sentiment Score",
+            "value": "$1.00",
+            "source": "News",
+            "confidence": "70%"
+          }
+        ],
+        "data_quality": "medium"
+      },
+      "management_insights": {
+        "content": "No transcript data available for management insights analysis.",
+        "data_quality": "low"
+      },
+      "risk_assessment": {
+        "content": "Risk Assessment:\n\nOur analysis of AAPL has identified two primary risk factors: Data Risk and Market Sentiment Risk. The Data Risk is associated with the synthesis quality of 70%, which indicates a moderate level of uncertainty in the data. Although there are no conflicts detected, the synthesis quality suggests that the data may not be entirely reliable, which could impact the accuracy of our analysis. We have a 70% confidence level in this assessment, as indicated by the confidence in the sentiment score.\n\nThe Market Sentiment Risk is driven by the Sentiment Score of 1.0, which is based on news sources with a 70% confidence level. This suggests that there may be some uncertainty in the market sentiment, which could impact the stock's performance. However, with no conflicts detected, we can be relatively confident that the sentiment score is not being influenced by contradictory information.\n\nOverall, our risk assessment suggests that investors should be aware of the potential limitations in the data quality and the uncertainty in market sentiment. With a 70% confidence level in both the synthesis quality and the sentiment score, we recommend that investors exercise caution when making decisions based on this analysis. The absence of data conflicts is a positive factor, but it does not entirely mitigate the risks associated with data quality and market sentiment.",
+        "data_quality": "medium"
+      },
+      "data_conflicts": {
+        "content": "No data conflicts detected across sources.",
+        "conflict_items": [],
+        "narrative": null,
+        "data_quality": "high"
+      },
+      "final_verdict": {
+        "content": "Synthesis quality (70%) is below the 75% threshold required for actionable signals. This typically means multiple data sources were unavailable or returned errors. Collect more data before drawing conclusions.",
+        "signal": "Insufficient Data",
+        "reason": "Synthesis quality (70%) is below the 75% threshold required for actionable signals. This typically means multiple data sources were unavailable or returned errors. Collect more data before drawing conclusions.",
+        "data_quality": "medium",
+        "confidence": "70%"
+      }
+    },
+    "markdown": "# Financial Research Report: AAPL\n\n> **Report ID:** `5fbcc1d6-e235-4d06-9595-32ed110f60c6`\n> **Generated:** 2026-05-06T06:10:59.673170+00:00\n> **Query:** Analyze Apple Q3 2024 performance\n> **Overall Data Quality:** 70%\n\n---\n\n## 1. Executive Summary\n\n**Data Quality:** MEDIUM\n\nExecutive Summary: \nOur research report on AAPL is based on data with a confidence level of 70%, sourced from Sec Edgar. Key financial metrics include revenue of $111.2B, net income of $29.6B, and earnings per share (EPS) of $2.02. Additionally, the sentiment score is $1.00, as reported by news sources with a 70% confidence level. Notably, 0 data conflicts were detected in our analysis. The overall synthesis quality of this report is 70%. These findings provide a factual overview of AAPL's financial performance, based on available data with the specified confidence levels.\n\n---\n\n## 2. Financial Metrics\n\n**Data Quality:** MEDIUM\n\n| Metric | Value | Source | Confidence |\n|--------|-------|--------|------------|\n| Eps | $2.02 | Sec Edgar | 70% |\n| Net Income | $29.6B | Sec Edgar | 70% |\n| Revenue | $111.2B | Sec Edgar | 70% |\n| Sentiment Score | $1.00 | News | 70% |\n---\n\n## 3. Management Insights\n\n**Data Quality:** LOW\n\nNo transcript data available for management insights analysis.\n\n---\n\n## 4. Risk Assessment\n\n**Data Quality:** MEDIUM\n\nRisk Assessment:\n\nOur analysis of AAPL has identified two primary risk factors: Data Risk and Market Sentiment Risk. The Data Risk is associated with the synthesis quality of 70%, which indicates a moderate level of uncertainty in the data. Although there are no conflicts detected, the synthesis quality suggests that the data may not be entirely reliable, which could impact the accuracy of our analysis. We have a 70% confidence level in this assessment, as indicated by the confidence in the sentiment score.\n\nThe Market Sentiment Risk is driven by the Sentiment Score of 1.0, which is based on news sources with a 70% confidence level. This suggests that there may be some uncertainty in the market sentiment, which could impact the stock's performance. However, with no conflicts detected, we can be relatively confident that the sentiment score is not being influenced by contradictory information.\n\nOverall, our risk assessment suggests that investors should be aware of the potential limitations in the data quality and the uncertainty in market sentiment. With a 70% confidence level in both the synthesis quality and the sentiment score, we recommend that investors exercise caution when making decisions based on this analysis. The absence of data conflicts is a positive factor, but it does not entirely mitigate the risks associated with data quality and market sentiment.\n\n---\n\n## 5. Data Conflicts\n\n**Data Quality:** HIGH\n\nNo data conflicts detected across sources.\n---\n\n## 6. Final Verdict\n\n**Data Quality:** MEDIUM\n\n**Signal: Insufficient Data** | Confidence: 70% | Data Quality: Medium\n\nSynthesis quality (70%) is below the 75% threshold required for actionable signals. This typically means multiple data sources were unavailable or returned errors. Collect more data before drawing conclusions.\n\n---\n\n*Report generated by Autonomous Financial Research Agent. All metrics include source attribution and confidence scores. Claims marked \"Insufficient Data\" indicate synthesis quality below the 75% threshold required for actionable signals.*",
+    "synthesis_quality": 0.7,
+    "status": "complete"
+  },
+  "error": null
+}
