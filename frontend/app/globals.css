@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: #0a0e1a;
+  --color-foreground: #fafafa;
+  
+  --color-terminal-navy: #0a0e1a;
+  --color-terminal-cyan: #00e5ff;
+  --color-terminal-amber: #f59e0b;
+  --color-terminal-emerald: #10b981;
+  --color-terminal-rose: #f43f5e;
+  
+  --font-sans: var(--font-outfit);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+:root {
+  --background: #0a0e1a;
+  --foreground: #fafafa;
+  --cyan-accent: rgba(0, 229, 255, 0.08);
+  --cyan-glow: rgba(0, 229, 255, 0.25);
+}
+
+body {
+  background: radial-gradient(circle at center, #0f1729 0%, #070b14 100%);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  min-height: 100-vh;
+  position: relative;
+}
+
+/* Grid Overlay */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.terminal-card {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--cyan-accent);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.terminal-card:hover {
+  border-color: var(--cyan-glow);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.05);
+}
+
+.font-data {
+  font-family: var(--font-mono);
+}
+
+@keyframes pulse-cyan {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.status-pulse {
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse-cyan 2s infinite;
+}
+
