@@ -43,6 +43,19 @@ def migrate():
                     period VARCHAR(20)
                 );
             """))
+
+            conn.execute(text("""
+                CREATE TABLE IF NOT EXISTS audit_logs (
+                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                    request_id VARCHAR(50),
+                    path TEXT,
+                    method VARCHAR(10),
+                    ip_address VARCHAR(45),
+                    status_code INTEGER,
+                    payload TEXT,
+                    created_at TIMESTAMP DEFAULT NOW()
+                );
+            """))
             
         print("Migration successful")
     except Exception as e:

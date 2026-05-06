@@ -8,40 +8,53 @@ A production-grade autonomous agent that gathers and synthesises financial data 
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      User Query                             │
-│              "Analyze Apple Q3 2024 performance"            │
-└───────────────────────┬─────────────────────────────────────┘
-                        │
-                        ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   ReAct Agent Loop                          │
-│                 (agents/react_loop.py)                       │
-│                                                             │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐  │
-│  │   THOUGHT    │───▶│   ACTION     │───▶│  OBSERVE     │  │
-│  │  (LLM JSON)  │    │ (tool call)  │    │ (tool result) │  │
-│  └──────────────┘    └──────────────┘    └──────────────┘  │
-│          ▲                                       │          │
-│          └───────────────────────────────────────┘          │
-└───────────┬─────────────────────────────────┬───────────────┘
-            │                                 │
-   ┌────────▼────────┐              ┌────────▼────────┐
-   │  Layer 1:       │              │  Layer 2:       │
-   │  Working Memory │              │  Semantic Memory│
-   │  (Python list)  │              │  (FAISS index)  │
-   │  Per-session    │              │  Persisted       │
-   └─────────────────┘              └─────────────────┘
+```mermaid
+graph TD
+    User([User Query]) --> QA[Query Analyzer]
+    QA --> DL[Disambiguation Layer]
+    DL --> Agent{ReAct Agent Loop}
+    
+    subgraph "Reasoning Core"
+        Agent --> Thought[Thought]
+        Thought --> Action[Action]
+        Action --> Tool[Tool Dispatch]
+        Tool --> Observation[Observation]
+        Observation --> Thought
+    end
+    
+    subgraph "Memory Systems"
+        Agent <--> WM[Working Memory - L1]
+        Agent <--> SM[(Semantic Memory - L2)]
+    end
+    
+    Agent --> Synthesis[Synthesis Engine]
+    Synthesis --> Resolver[Conflict Resolver]
+    Resolver --> Report[Final Report]
+    Report --> Eval[Evaluation Framework]
+    Eval --> Dash[HTML Dashboard]
 ```
 
-## Modules
+## Core Modules
 
-| Module | Description |
-|--------|-------------|
-| `agents/` | ReAct loop, LLM client (OpenAI/Anthropic), system prompts |
-| `tools/` | SEC EDGAR, earnings transcripts, news sentiment tools |
-| `memory/` | Semantic memory: embedder, chunker, FAISS vector store |
+| Module | Purpose | Key Features |
+|--------|---------|--------------|
+| `agent/` | Reasoning Intelligence | Query Analysis, Ticker Disambiguation, Circuit Breakers |
+| `synthesis/` | Data Harmonization | Priority-based conflict resolution (SEC > Transcript > News) |
+| `security/` | System Hardening | PII Redaction, Prompt Injection Shield |
+| `evaluation/` | Quality Assurance | 20+ Automated Metrics, HTML Dashboard Generation |
+| `memory/` | Knowledge Retention | FAISS-backed Semantic Memory (Layer 2) |
+| `tools/` | Data Ingestion | 12+ High-Fidelity tool implementations |
+
+## High-Fidelity Tooling Suite
+
+The agent utilizes a registry of specialized tools for deep financial analysis:
+- **SEC EDGAR**: Direct extraction of facts from 10-K, 10-Q, and 8-K filings.
+- **Transcripts**: Processing and summarization of earnings call transcripts.
+- **News & Sentiment**: Real-time news aggregation with VADER-based sentiment scoring.
+- **Financial Data API**: Quantitative metrics retrieval (Revenue, EPS, Multiples).
+- **Peer Comparison**: Automated benchmarking against industry cohorts.
+- **Fact Checker**: Cross-references claims against known data points.
+- **Calculation Engine**: Deterministic arithmetic to prevent LLM hallucination.
 
 ---
 
@@ -144,12 +157,25 @@ pip install anthropic
 ```
 
 ### Environment Variables
+Create a `.env` file based on `.env.example`:
 ```bash
-export OPENAI_API_KEY="sk-..."         # Required for embeddings + LLM (if using OpenAI)
-export ANTHROPIC_API_KEY="..."         # Required if LLM_PROVIDER=anthropic
-export LLM_PROVIDER="openai"           # "openai" or "anthropic"
-export NEWS_API_KEY="..."              # Required by news tool
+# API Keys
+OPENAI_API_KEY="sk-..."
+ANTHROPIC_API_KEY="sk-ant-..."
+TAVILY_API_KEY="tvly-..."
+DATABASE_URL="postgresql://user:pass@host:port/db"
+
+# Configuration
+LLM_PROVIDER="openai" # openai, anthropic, gemini, groq
+LLM_MODEL="gpt-4o"
+ALLOWED_ORIGINS="http://localhost:3000"
 ```
+
+## Security & Compliance
+- **PII Redaction**: All tool outputs are scrubbed for sensitive data before memory storage.
+- **Prompt Injection Shield**: Incoming queries are scanned for malicious heuristic patterns.
+- **Audit Logs**: Every API interaction is logged with IP tracking for security auditing.
+- **Rate Limiting**: Built-in protection against DDoS and API abuse.
 
 ## Usage
 

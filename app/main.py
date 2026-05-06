@@ -17,6 +17,7 @@ from memory import VectorStore
 from app.database import get_db_engine
 from app.api.router import router as api_router
 from app.limiter import limiter
+from app.middleware import AuditLogMiddleware
 
 logger = logging.getLogger(__name__)
 
@@ -73,12 +74,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.add_middleware(AuditLogMiddleware)
+
 # ── Rate Limiting Setup ────────────────────────────────────────────────────
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # ── Routing ────────────────────────────────────────────────────────────────
+# ── Root Endpoint ──────────────────────────────────────────────────────────
+@app.get("/")
+async def root():
+    return {
+        "service": "Autonomous Financial Research Agent API",
+        "version": "1.0.0",
+        "status": "running"
+    }
+
 app.include_router(api_router)
+
 
 if __name__ == "__main__":
     import uvicorn

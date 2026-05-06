@@ -12,6 +12,8 @@ from agents import run_agent, LLMClient
 from synthesis import synthesize
 from reports import generate_report, save_report, save_findings
 from tools import TOOL_REGISTRY
+from evaluation.metrics import calculate_metrics
+from evaluation.dashboard import generate_dashboard
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +62,7 @@ async def run_research_pipeline(
         # Phase 4: Synthesize Data
         logger.info(f"Job {job_id}: Synthesizing data...")
         synthesis_result = synthesize(memory=agent_result["memory"])
+        synthesis_result["ticker"] = ticker
 
         # Phase 5: Generate Report
         logger.info(f"Job {job_id}: Generating report...")
@@ -79,6 +82,12 @@ async def run_research_pipeline(
         # Mark Complete
         JOB_STORE[job_id]["status"] = "complete"
         JOB_STORE[job_id]["report"] = report
+        
+        # Phase 6: Evaluation & Dashboard
+        logger.info(f"Job {job_id}: Running performance evaluation...")
+        eval_metrics = calculate_metrics(report_dict=report, memory=agent_result["memory"])
+        generate_dashboard(metrics=eval_metrics, output_path=f"evaluation/dashboard_{job_id}.html")
+        
         logger.info(f"Job {job_id} successfully completed.")
 
     except Exception as exc:

@@ -7,3 +7,4 @@ __pycache__/
 .deepeval/
 memory/faiss_index.bin
 memory/metadata.json
+*.pkl

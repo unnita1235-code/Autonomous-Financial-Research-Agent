@@ -49,6 +49,7 @@ if TYPE_CHECKING:
     from memory.vector_store import VectorStore
 
 from .prompts import SYSTEM_PROMPT, build_user_prompt
+from security.pii_redactor import redact_pii
 
 logger = logging.getLogger(__name__)
 
@@ -281,6 +282,13 @@ async def run_agent(
 
         try:
             tool_result = await tool_registry[tool_name](**tool_args)
+            # Redact PII from tool result strings recursively
+            def _redact_obj(obj):
+                if isinstance(obj, str): return redact_pii(obj)
+                if isinstance(obj, dict): return {k: _redact_obj(v) for k, v in obj.items()}
+                if isinstance(obj, list): return [_redact_obj(i) for i in obj]
+                return obj
+            tool_result = _redact_obj(tool_result)
         except Exception as exc:
             logger.error("  → Tool '%s' raised: %s", tool_name, exc)
             tool_result = {"error": str(exc)}
