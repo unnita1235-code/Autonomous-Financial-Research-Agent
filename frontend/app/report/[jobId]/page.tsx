@@ -9,22 +9,19 @@ import MetricsTable from "@/components/MetricsTable";
 import ConflictAlert from "@/components/ConflictAlert";
 
 interface ReportData {
-  job_id: string;
+  report_id: string;
   ticker: string;
   query: string;
   status: string;
   synthesis_quality: number;
-  report_markdown: string;
-  data: {
-    metrics: Record<string, any>;
-    conflicts: any[];
-    sections: {
-      executive_summary: string;
-      business_overview: string;
-      financial_performance: string;
-      risk_factors: string;
-      investment_verdict: string;
-    };
+  markdown: string;
+  sections: {
+    executive_summary: { content: string; data_quality: string };
+    financial_metrics: { content: string; rows: any[]; data_quality: string };
+    management_insights: { content: string; data_quality: string };
+    risk_assessment: { content: string; data_quality: string };
+    data_conflicts: { content: string; conflict_items: any[]; narrative?: string; data_quality: string };
+    final_verdict: { content: string; signal: string; reason: string; data_quality: string; confidence: string };
   };
 }
 
@@ -63,7 +60,7 @@ export default function ReportPage() {
 
   const copyToClipboard = () => {
     if (!report) return;
-    navigator.clipboard.writeText(report.report_markdown);
+    navigator.clipboard.writeText(report.markdown);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -94,12 +91,12 @@ export default function ReportPage() {
 
   if (!report) return null;
 
-  const sections = [
-    { id: "executive_summary", title: "EXECUTIVE SUMMARY", content: report.data.sections?.executive_summary || "" },
-    { id: "business_overview", title: "BUSINESS OVERVIEW", content: report.data.sections?.business_overview || "" },
-    { id: "financial_performance", title: "FINANCIAL PERFORMANCE", content: report.data.sections?.financial_performance || "" },
-    { id: "risk_factors", title: "RISK EXPOSURE", content: report.data.sections?.risk_factors || "" },
-    { id: "investment_verdict", title: "INVESTMENT VERDICT", content: report.data.sections?.investment_verdict || "" },
+  const reportSections = [
+    { id: "executive_summary", title: "EXECUTIVE SUMMARY", content: report.sections.executive_summary?.content || "" },
+    { id: "management_insights", title: "MANAGEMENT INSIGHTS", content: report.sections.management_insights?.content || "" },
+    { id: "financial_performance", title: "FINANCIAL PERFORMANCE", content: report.sections.financial_metrics?.content || "" },
+    { id: "risk_factors", title: "RISK EXPOSURE", content: report.sections.risk_assessment?.content || "" },
+    { id: "investment_verdict", title: "INVESTMENT VERDICT", content: report.sections.final_verdict?.content || "" },
   ];
 
   const qualityScore = Math.round(report.synthesis_quality * 100);
@@ -150,21 +147,21 @@ export default function ReportPage() {
       </div>
 
       {/* Main Signal Badge */}
-      <div className={`p-6 rounded-md border-l-4 ${getVerdictStyle(report.data.sections?.investment_verdict)} transition-all shadow-[0_0_20px_rgba(0,0,0,0.3)]`}>
+      <div className={`p-6 rounded-md border-l-4 ${getVerdictStyle(report.sections.final_verdict?.signal)} transition-all shadow-[0_0_20px_rgba(0,0,0,0.3)]`}>
         <div className="flex items-center gap-3 mb-4">
           <div className="w-2 h-2 rounded-full bg-current animate-pulse"></div>
           <h2 className="text-xs font-bold uppercase tracking-[0.3em] opacity-80">FINAL_INVESTMENT_SIGNAL</h2>
         </div>
         <div className="prose prose-invert max-w-none prose-sm font-sans leading-relaxed">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {report.data.sections?.investment_verdict || "SIGNAL_PENDING"}
+            {report.sections.final_verdict?.content || "SIGNAL_PENDING"}
           </ReactMarkdown>
         </div>
       </div>
 
       {/* HUD Sections */}
       <div className="grid grid-cols-1 gap-6">
-        {sections.map((section) => (
+        {reportSections.map((section) => (
           <div key={section.id} className="terminal-card rounded-md overflow-hidden border-l-2 border-[#00e5ff20] hover:border-[#00e5ff80] transition-all">
             <button
               onClick={() => toggleSection(section.id)}
@@ -208,7 +205,7 @@ export default function ReportPage() {
           </button>
           {expandedSections["metrics_and_conflicts"] && (
             <div className="p-8 pt-2 border-t border-[#00e5ff05] space-y-8 animate-in slide-in-from-top-2 duration-300">
-              <ConflictAlert conflicts={report.data.conflicts} />
+              <ConflictAlert conflicts={report.sections.data_conflicts?.conflict_items || []} />
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Terminal className="w-3 h-3 text-[#00e5ff80]" />
@@ -216,7 +213,7 @@ export default function ReportPage() {
                     SYNTHESIZED_FINANCIAL_METRICS
                   </h3>
                 </div>
-                <MetricsTable metrics={report.data.metrics} />
+                <MetricsTable metrics={report.sections.financial_metrics?.rows || []} />
               </div>
             </div>
           )}

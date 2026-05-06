@@ -1,3 +1,7 @@
+# ALL endpoints return: {"success": bool, "data": dict|null, "error": str|null}
+# Frontend reads: response.data.{field_name}
+# Never return data at top level — always wrap in envelope.
+
 """
 app/api/router.py
 ─────────────────
