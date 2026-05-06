@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark" suppressHydrationWarning={true}>
       <body
         className={`${outfit.variable} ${jetbrainsMono.variable} min-h-screen font-sans antialiased flex flex-col`}
       >
