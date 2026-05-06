@@ -2,46 +2,43 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Search, Terminal } from "lucide-react";
+import { Loader2, Terminal } from "lucide-react";
 
 export default function InputDashboard() {
-  const router = useRouter();
-  const [ticker, setTicker] = useState("");
   const [query, setQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [ticker, setTicker] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    if (!/^[A-Z1-9]{1,5}$/.test(ticker)) {
-      setError("INVALID TICKER FORMAT");
-      return;
-    }
-    if (query.trim().length < 10) {
-      setError("QUERY PARAMETERS TOO SHORT");
-      return;
-    }
-
-    setIsLoading(true);
+  async function handleSubmit() {
+    // Prevent double submission
+    if (loading) return;
+    setLoading(true);
+    setError("");
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      const response = await fetch(`${apiUrl}/research`, {
+      const res = await fetch(`${apiUrl}/research`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ticker, query: query.trim() }),
+        body: JSON.stringify({ query, ticker: ticker.toUpperCase() }),
       });
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "UPLINK ERROR");
-      router.push(`/status/${data.data.job_id}`);
+      const result = await res.json();
+
+      // Check envelope
+      if (!result.success || !result.data?.job_id) {
+        throw new Error(result.error || "No job_id returned from server");
+      }
+
+      // Navigate with REAL job_id
+      router.push(`/status/${result.data.job_id}`);
     } catch (err: any) {
-      setError(err.message || "SYSTEM FAILURE");
-      setIsLoading(false);
+      setError(err.message || "Failed to start research. Is the backend running?");
+      setLoading(false);
     }
-  };
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] w-full">
@@ -53,7 +50,7 @@ export default function InputDashboard() {
         </div>
 
         <div className="terminal-card p-2 rounded-lg bg-[#0f1729cc]">
-          <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-2">
+          <div className="flex flex-col md:flex-row gap-2">
             <div className="relative group">
               <input
                 type="text"
@@ -61,10 +58,12 @@ export default function InputDashboard() {
                 onChange={(e) => setTicker(e.target.value.toUpperCase())}
                 placeholder="TICKER"
                 className="w-full md:w-32 px-4 py-4 bg-[#070b14] border border-[#00e5ff20] rounded text-[#00e5ff] placeholder:text-[#00e5ff40] focus:outline-none focus:border-[#00e5ff80] font-mono transition-all text-center"
-                disabled={isLoading}
+                disabled={loading}
                 maxLength={5}
               />
-              <div className="absolute -top-2 left-2 bg-[#0a0e1a] px-1 text-[8px] text-[#00e5ff60] tracking-widest font-mono">ASSET_ID</div>
+              <div className="absolute -top-2 left-2 bg-[#0a0e1a] px-1 text-[8px] text-[#00e5ff60] tracking-widest font-mono">
+                ASSET_ID
+              </div>
             </div>
 
             <div className="flex-1 relative group">
@@ -74,32 +73,37 @@ export default function InputDashboard() {
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="EXECUTE RESEARCH QUERY..."
                 className="w-full px-6 py-4 bg-[#070b14] border border-[#00e5ff20] rounded text-[#fafafa] placeholder:text-[#ffffff20] focus:outline-none focus:border-[#00e5ff80] transition-all"
-                disabled={isLoading}
+                disabled={loading}
               />
-              <div className="absolute -top-2 left-4 bg-[#0a0e1a] px-1 text-[8px] text-[#00e5ff60] tracking-widest font-mono">QUERY_PARAM</div>
+              <div className="absolute -top-2 left-4 bg-[#0a0e1a] px-1 text-[8px] text-[#00e5ff60] tracking-widest font-mono">
+                QUERY_PARAM
+              </div>
             </div>
 
             <button
-              type="submit"
-              disabled={isLoading}
+              onClick={handleSubmit}
+              disabled={loading || !ticker || !query}
               className="px-8 py-4 bg-transparent border border-[#00e5ff40] text-[#00e5ff] rounded hover:bg-[#00e5ff10] transition-all flex items-center justify-center gap-2 font-semibold tracking-wider disabled:opacity-50"
             >
-              {isLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Initializing...</span>
+                </>
               ) : (
                 <>
                   <Terminal className="w-4 h-4" />
-                  <span>INITIALIZE</span>
+                  <span>Start Research</span>
                 </>
               )}
             </button>
-          </form>
+          </div>
         </div>
 
         {error && (
-          <div className="text-center font-mono text-[#f43f5e] text-xs tracking-widest animate-pulse">
-            ERROR: {error}
-          </div>
+          <p style={{ color: "#f43f5e", fontSize: "14px", marginTop: "8px", textAlign: "center" }}>
+            {error}
+          </p>
         )}
 
         <div className="flex flex-col items-center gap-4 pt-12">

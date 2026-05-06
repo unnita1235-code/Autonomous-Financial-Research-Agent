@@ -4,229 +4,291 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { ChevronDown, ChevronRight, Copy, Check, Terminal, ExternalLink } from "lucide-react";
-import MetricsTable from "@/components/MetricsTable";
+import { ChevronDown, ChevronRight, Copy, Check, Terminal, ArrowLeft, Loader2 } from "lucide-react";
 import ConflictAlert from "@/components/ConflictAlert";
 
-interface ReportData {
-  report_id: string;
-  ticker: string;
-  query: string;
-  status: string;
-  synthesis_quality: number;
-  markdown: string;
-  sections: {
-    executive_summary: { content: string; data_quality: string };
-    financial_metrics: { content: string; rows: any[]; data_quality: string };
-    management_insights: { content: string; data_quality: string };
-    risk_assessment: { content: string; data_quality: string };
-    data_conflicts: { content: string; conflict_items: any[]; narrative?: string; data_quality: string };
-    final_verdict: { content: string; signal: string; reason: string; data_quality: string; confidence: string };
-  };
-}
-
 export default function ReportPage() {
+  const [report, setReport] = useState<any>(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    executive_summary: true,
+    financial_metrics: true,
+    management_insights: false,
+    risk_assessment: false,
+    data_conflicts: true,
+    final_verdict: true,
+  });
+
   const params = useParams();
   const router = useRouter();
   const jobId = params.jobId as string;
 
-  const [report, setReport] = useState<ReportData | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    executive_summary: true,
-    business_overview: false,
-    metrics_and_conflicts: true,
-    financial_performance: false,
-    risk_factors: false,
-    investment_verdict: true,
-  });
-
   useEffect(() => {
-    if (!jobId) return;
-    const fetchReport = async () => {
-      try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-        const res = await fetch(`${apiUrl}/report/${jobId}`);
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "DATA RETRIEVAL ERROR");
-        setReport(data.data);
-      } catch (err: any) {
-        setError(err.message || "REPORT ACCESS DENIED");
-      }
-    };
-    fetchReport();
-  }, [jobId]);
+    if (!jobId || jobId === "undefined") {
+      setError("Invalid report ID");
+      setLoading(false);
+      return;
+    }
 
-  const copyToClipboard = () => {
-    if (!report) return;
-    navigator.clipboard.writeText(report.markdown);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+    fetch(`${apiUrl}/report/${jobId}`)
+      .then((res) => res.json())
+      .then((result) => {
+        if (result.success && result.data) {
+          setReport(result.data);
+        } else {
+          setError(result.error || "Failed to load report");
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(`Network error: ${err.message}`);
+        setLoading(false);
+      });
+  }, [jobId]);
 
   const toggleSection = (section: string) => {
     setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
 
-  const getVerdictStyle = (verdict: string = "") => {
-    const v = verdict.toLowerCase();
-    if (v.includes("buy") || v.includes("positive")) return "text-[#10b981] border-[#10b98140] bg-[#10b98110]";
-    if (v.includes("sell") || v.includes("negative") || v.includes("caution") || v.includes("risk")) return "text-[#f43f5e] border-[#f43f5e40] bg-[#f43f5e10]";
-    return "text-[#f59e0b] border-[#f59e0b40] bg-[#f59e0b10]";
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(report?.markdown || "");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
+
+  function renderConfidenceBadge(conf: string) {
+    const num = parseInt(conf);
+    let color = "#f43f5e"; // red
+    if (num >= 80) color = "#10b981"; // green
+    else if (num >= 60) color = "#f59e0b"; // amber
+    return (
+      <span
+        style={{
+          background: color,
+          color: "#fff",
+          padding: "2px 8px",
+          borderRadius: "4px",
+          fontSize: "12px",
+          fontFamily: "JetBrains Mono, monospace",
+        }}
+      >
+        {conf}
+      </span>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <Loader2 className="w-12 h-12 text-[#00e5ff] animate-spin" />
+        <p className="text-[#00e5ff] font-mono text-xs uppercase tracking-widest">Initialising neural link...</p>
+      </div>
+    );
+  }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] w-full">
-        <div className="terminal-card p-8 rounded-lg border-[#f43f5e40] space-y-4 text-center max-w-md">
-          <Terminal className="w-8 h-8 text-[#f43f5e] mx-auto" />
-          <h2 className="text-xl font-bold text-[#f43f5e] tracking-widest uppercase">ACCESS DENIED</h2>
-          <p className="text-zinc-500 font-mono text-xs uppercase">{error}</p>
-          <button onClick={() => router.push("/")} className="px-4 py-2 border border-[#f43f5e40] text-[#f43f5e] rounded text-xs uppercase font-bold hover:bg-[#f43f5e10] transition-all">RESTART TERMINAL</button>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] p-4 text-center">
+        <div className="max-w-md p-8 border border-red-500/20 bg-red-500/5 rounded-lg space-y-6">
+          <Terminal className="w-12 h-12 text-red-500 mx-auto" />
+          <h2 className="text-2xl font-bold text-red-500 tracking-tighter uppercase">ACCESS_DENIED</h2>
+          <p className="text-zinc-400 font-mono text-sm">{error}</p>
+          <button
+            onClick={() => router.push("/")}
+            className="flex items-center gap-2 px-6 py-3 bg-red-500 text-white rounded-md font-bold uppercase text-xs tracking-widest hover:bg-red-600 transition-all mx-auto"
+          >
+            <ArrowLeft className="w-4 h-4" /> Go Back
+          </button>
         </div>
       </div>
     );
   }
 
-  if (!report) return null;
+  const sections = report?.sections || report?.report_components || {};
+  const synthesisQuality = report?.synthesis_quality || 0;
+  const verdict = sections?.final_verdict;
+  const metrics = sections?.financial_metrics;
+  const metricsRows = metrics?.rows || metrics?.metrics || [];
 
-  const reportSections = [
-    { id: "executive_summary", title: "EXECUTIVE SUMMARY", content: report.sections.executive_summary?.content || "" },
-    { id: "management_insights", title: "MANAGEMENT INSIGHTS", content: report.sections.management_insights?.content || "" },
-    { id: "financial_performance", title: "FINANCIAL PERFORMANCE", content: report.sections.financial_metrics?.content || "" },
-    { id: "risk_factors", title: "RISK EXPOSURE", content: report.sections.risk_assessment?.content || "" },
-    { id: "investment_verdict", title: "INVESTMENT VERDICT", content: report.sections.final_verdict?.content || "" },
+  const qualityColor =
+    synthesisQuality > 0.8 ? "#10b981" : synthesisQuality > 0.6 ? "#f59e0b" : "#f43f5e";
+
+  const getVerdictBg = (signal: string) => {
+    switch (signal) {
+      case "Positive":
+        return "bg-[#10b98120] border-[#10b98140] text-[#10b981]";
+      case "Neutral":
+        return "bg-[#f59e0b20] border-[#f59e0b40] text-[#f59e0b]";
+      case "Caution":
+        return "bg-[#f43f5e20] border-[#f43f5e40] text-[#f43f5e]";
+      case "Insufficient Data":
+        return "bg-zinc-500/20 border-zinc-500/40 text-zinc-400";
+      default:
+        return "bg-zinc-800 border-zinc-700 text-zinc-400";
+    }
+  };
+
+  const sectionOrder = [
+    { id: "executive_summary", title: "Executive Summary" },
+    { id: "financial_metrics", title: "Financial Metrics" },
+    { id: "management_insights", title: "Management Insights" },
+    { id: "risk_assessment", title: "Risk Assessment" },
+    { id: "data_conflicts", title: "Data Conflicts" },
+    { id: "final_verdict", title: "Final Verdict" },
   ];
 
-  const qualityScore = Math.round(report.synthesis_quality * 100);
-  const strokeDasharray = 2 * Math.PI * 45;
-  const strokeDashoffset = strokeDasharray * (1 - qualityScore / 100);
-
   return (
-    <div className="max-w-6xl mx-auto space-y-8 pb-32 animate-in fade-in duration-700">
-      {/* HUD Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#00e5ff15] pb-6">
+    <div className="max-w-6xl mx-auto px-4 py-12 space-y-12 animate-in fade-in duration-1000">
+      {/* Header HUD */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 border-b border-[#00e5ff10] pb-10">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <span className="px-2 py-1 bg-[#00e5ff10] border border-[#00e5ff30] text-[#00e5ff] text-[10px] font-mono tracking-widest">ANALYSIS_REPORT</span>
-            <span className="text-zinc-500 font-mono text-[10px] tracking-widest">ID: {jobId.slice(0, 8)}</span>
+            <span className="px-2 py-0.5 bg-[#00e5ff10] border border-[#00e5ff20] text-[#00e5ff] text-[10px] font-mono tracking-widest uppercase">
+              Research_Report
+            </span>
+            <span className="text-zinc-600 font-mono text-[10px] tracking-widest">
+              ID: {report?.report_id?.slice(0, 8) || "N/A"}
+            </span>
           </div>
-          <h1 className="text-5xl font-light tracking-[0.1em] text-[#fafafa] uppercase">
-            {report.ticker} <span className="text-[#00e5ff60]">TERMINAL</span>
+          <h1 className="text-6xl font-black tracking-tighter text-white">
+            {report?.ticker} <span className="text-zinc-800">ANALYSIS</span>
           </h1>
-          <p className="text-[#00e5ff80] max-w-2xl text-xs font-mono uppercase tracking-wider italic">
-            &gt; {report.query}
+          <p className="text-zinc-500 max-w-2xl font-mono text-xs uppercase italic tracking-tight">
+            &gt; {report?.query}
           </p>
         </div>
 
-        <div className="flex items-center gap-6">
-          <div className="relative w-24 h-24">
-            <svg className="w-full h-full -rotate-90">
-              <circle cx="48" cy="48" r="45" fill="transparent" stroke="#ffffff05" strokeWidth="4" />
-              <circle 
-                cx="48" cy="48" r="45" fill="transparent" stroke="#00e5ff" strokeWidth="4" 
-                strokeDasharray={strokeDasharray} strokeDashoffset={strokeDashoffset}
-                strokeLinecap="round" className="transition-all duration-1000 ease-out"
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-2xl font-mono text-[#00e5ff] leading-none">{qualityScore}</span>
-              <span className="text-[8px] text-[#00e5ff60] font-mono tracking-tighter">QUALITY</span>
+        <div className="flex items-center gap-8 bg-zinc-900/50 p-6 rounded-2xl border border-white/5">
+          <div className="text-center">
+            <div
+              className="text-4xl font-black mb-1"
+              style={{ color: qualityColor }}
+            >
+              {Math.round(synthesisQuality * 100)}%
+            </div>
+            <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
+              Synthesis Quality
             </div>
           </div>
-          
+
           <button
             onClick={copyToClipboard}
-            className="flex items-center gap-2 px-4 py-2 border border-[#00e5ff30] text-[#00e5ff60] hover:text-[#00e5ff] hover:border-[#00e5ff] rounded-md transition-all text-[10px] font-bold uppercase tracking-widest"
+            className="flex items-center gap-2 px-5 py-3 border border-zinc-800 text-zinc-400 hover:text-white hover:border-[#00e5ff] hover:bg-[#00e5ff10] rounded-xl transition-all text-xs font-bold uppercase tracking-widest"
           >
-            {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-            {copied ? "COPIED" : "MARKDOWN"}
+            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            {copied ? "Copied" : "Copy Markdown"}
           </button>
         </div>
       </div>
 
-      {/* Main Signal Badge */}
-      <div className={`p-6 rounded-md border-l-4 ${getVerdictStyle(report.sections.final_verdict?.signal)} transition-all shadow-[0_0_20px_rgba(0,0,0,0.3)]`}>
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-2 h-2 rounded-full bg-current animate-pulse"></div>
-          <h2 className="text-xs font-bold uppercase tracking-[0.3em] opacity-80">FINAL_INVESTMENT_SIGNAL</h2>
+      {/* Final Verdict Highlight */}
+      <div className={`p-8 rounded-2xl border ${getVerdictBg(verdict?.signal)} shadow-2xl transition-all`}>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-current animate-pulse" />
+            <h2 className="text-sm font-bold uppercase tracking-[0.2em]">Final Verdict: {verdict?.signal || "N/A"}</h2>
+          </div>
+          {verdict?.confidence && (
+            <div className="text-xs font-mono opacity-60">Confidence: {verdict.confidence}</div>
+          )}
         </div>
-        <div className="prose prose-invert max-w-none prose-sm font-sans leading-relaxed">
+        <div className="prose prose-invert max-w-none prose-sm leading-relaxed">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {report.sections.final_verdict?.content || "SIGNAL_PENDING"}
+            {verdict?.content || "No verdict content available."}
           </ReactMarkdown>
         </div>
       </div>
 
-      {/* HUD Sections */}
-      <div className="grid grid-cols-1 gap-6">
-        {reportSections.map((section) => (
-          <div key={section.id} className="terminal-card rounded-md overflow-hidden border-l-2 border-[#00e5ff20] hover:border-[#00e5ff80] transition-all">
-            <button
-              onClick={() => toggleSection(section.id)}
-              className="w-full flex items-center justify-between p-5 bg-[#ffffff02] hover:bg-[#ffffff05] transition-colors group"
-            >
-              <div className="flex items-center gap-4">
-                <div className={`w-1 h-4 bg-[#00e5ff40] transition-all ${expandedSections[section.id] ? "h-6 bg-[#00e5ff]" : ""}`}></div>
-                <h2 className="text-xs font-bold text-zinc-300 tracking-[0.2em] uppercase group-hover:text-[#00e5ff] transition-colors">{section.title}</h2>
-              </div>
-              {expandedSections[section.id] ? (
-                <ChevronDown className="w-4 h-4 text-zinc-600 group-hover:text-[#00e5ff]" />
-              ) : (
-                <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#00e5ff]" />
-              )}
-            </button>
-            {expandedSections[section.id] && (
-              <div className="p-8 pt-2 border-t border-[#00e5ff05] prose prose-invert max-w-none prose-zinc prose-sm font-sans animate-in slide-in-from-top-2 duration-300">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {section.content || "*DATA UNAVAILABLE*"}
-                </ReactMarkdown>
-              </div>
-            )}
-          </div>
-        ))}
+      {/* Sections Grid */}
+      <div className="space-y-6">
+        {sectionOrder.map((sectionInfo) => {
+          const sectionData = sections[sectionInfo.id];
+          if (!sectionData) return null;
 
-        {/* Structured Data HUD */}
-        <div className="terminal-card rounded-md overflow-hidden border-l-2 border-[#00e5ff20]">
-          <button
-            onClick={() => toggleSection("metrics_and_conflicts")}
-            className="w-full flex items-center justify-between p-5 bg-[#ffffff02] hover:bg-[#ffffff05] transition-colors group"
-          >
-            <div className="flex items-center gap-4">
-              <div className={`w-1 h-4 bg-[#00e5ff40] transition-all ${expandedSections["metrics_and_conflicts"] ? "h-6 bg-[#00e5ff]" : ""}`}></div>
-              <h2 className="text-xs font-bold text-zinc-300 tracking-[0.2em] uppercase group-hover:text-[#00e5ff] transition-colors">DATA_SYNTHESIS_METRICS</h2>
-            </div>
-            {expandedSections["metrics_and_conflicts"] ? (
-              <ChevronDown className="w-4 h-4 text-zinc-600 group-hover:text-[#00e5ff]" />
-            ) : (
-              <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#00e5ff]" />
-            )}
-          </button>
-          {expandedSections["metrics_and_conflicts"] && (
-            <div className="p-8 pt-2 border-t border-[#00e5ff05] space-y-8 animate-in slide-in-from-top-2 duration-300">
-              <ConflictAlert conflicts={report.sections.data_conflicts?.conflict_items || []} />
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Terminal className="w-3 h-3 text-[#00e5ff80]" />
-                  <h3 className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">
-                    SYNTHESIZED_FINANCIAL_METRICS
-                  </h3>
+          const isExpanded = expandedSections[sectionInfo.id];
+
+          return (
+            <div
+              key={sectionInfo.id}
+              className="bg-zinc-900/30 border border-white/5 rounded-2xl overflow-hidden hover:border-white/10 transition-all"
+            >
+              <button
+                onClick={() => toggleSection(sectionInfo.id)}
+                className="w-full flex items-center justify-between p-6 hover:bg-white/5 transition-colors"
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`w-1 h-5 rounded-full transition-all ${isExpanded ? "bg-[#00e5ff]" : "bg-zinc-700"}`} />
+                  <h3 className="text-sm font-bold text-zinc-300 uppercase tracking-widest">{sectionInfo.title}</h3>
                 </div>
-                <MetricsTable metrics={report.sections.financial_metrics?.rows || []} />
-              </div>
+                <div className="flex items-center gap-4">
+                  {sectionData.data_quality && (
+                    <span className="text-[10px] font-mono px-2 py-1 bg-zinc-800 rounded border border-zinc-700 text-zinc-500 uppercase">
+                      Quality: {sectionData.data_quality}
+                    </span>
+                  )}
+                  {isExpanded ? (
+                    <ChevronDown className="w-5 h-5 text-zinc-600" />
+                  ) : (
+                    <ChevronRight className="w-5 h-5 text-zinc-600" />
+                  )}
+                </div>
+              </button>
+
+              {isExpanded && (
+                <div className="p-8 pt-0 border-t border-white/5 animate-in slide-in-from-top-2 duration-300">
+                  {sectionInfo.id === "financial_metrics" && metricsRows.length > 0 && (
+                    <div className="mb-8 overflow-x-auto">
+                      <table className="w-full text-left border-collapse min-w-[600px]">
+                        <thead>
+                          <tr className="border-b border-white/10">
+                            <th className="py-4 text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Metric</th>
+                            <th className="py-4 text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Value</th>
+                            <th className="py-4 text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Source</th>
+                            <th className="py-4 text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Confidence</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {metricsRows.map((row: any, i: number) => (
+                            <tr key={i} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                              <td className="py-4 text-sm text-zinc-300 font-medium">{row.metric}</td>
+                              <td className="py-4 text-sm text-[#00e5ff] font-mono">{row.value}</td>
+                              <td className="py-4 text-xs text-zinc-500">{row.source}</td>
+                              <td className="py-4">{renderConfidenceBadge(row.confidence)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
+                  {sectionInfo.id === "data_conflicts" && sectionData.conflict_items?.length > 0 && (
+                    <div className="mb-6">
+                      <ConflictAlert conflicts={sectionData.conflict_items} />
+                    </div>
+                  )}
+
+                  <div className="prose prose-invert max-w-none prose-sm prose-zinc leading-loose">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {sectionData.content || "*No detailed content provided for this section.*"}
+                    </ReactMarkdown>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          );
+        })}
       </div>
-      
-      {/* Footer Info */}
-      <div className="flex justify-between items-center text-[8px] font-mono text-zinc-700 tracking-[0.3em] uppercase pt-12">
-        <span>&copy; 2026 AGENT_RESEARCH_UPLINK</span>
-        <div className="flex gap-4">
-          <span>SEC_EDGAR_READY</span>
-          <span>ALPHA_VANTAGE_SYNC</span>
-          <span>TRANSCRIPT_RECON_ACTIVE</span>
+
+      {/* Footer */}
+      <div className="pt-20 pb-10 flex justify-between items-center border-t border-white/5 text-[10px] font-mono text-zinc-700 uppercase tracking-[0.4em]">
+        <span>&copy; 2026 AUTONOMOUS_FINANCIAL_RESEARCH</span>
+        <div className="flex gap-8">
+          <span>SEC_EDGAR_VERIFIED</span>
+          <span>MULTI_SOURCE_SYNTHESIS</span>
         </div>
       </div>
     </div>

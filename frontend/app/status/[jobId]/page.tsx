@@ -1,101 +1,129 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
-
-type JobStatus = "queued" | "running" | "complete" | "failed";
-
-interface StatusResponse {
-  job_id: string;
-  status: JobStatus;
-  progress: number;
-  message?: string;
-  error?: string;
-}
+import { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { Loader2, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function StatusPage() {
   const params = useParams();
+  const jobId = params.jobId as string; // matches folder name [jobId]
   const router = useRouter();
-  const jobId = params.jobId as string;
 
-  const [status, setStatus] = useState<JobStatus>("queued");
-  const [progress, setProgress] = useState(0);
-  const [message, setMessage] = useState("INITIALIZING SYSTEM UPLINK...");
-  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState('queued');
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    if (!jobId) return;
+    if (!jobId || jobId === 'undefined') {
+      setError('Invalid job ID. Please go back and try again.');
+      return;
+    }
 
-    const fetchStatus = async () => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    let active = true; // prevents state updates after unmount
+
+    const poll = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
         const res = await fetch(`${apiUrl}/status/${jobId}`);
-        const data = await res.json();
+        const result = await res.json();
 
-        if (!res.ok) throw new Error(data.message || "TELEMETRY FAILURE");
+        if (!active) return;
 
-        const jobStatus: StatusResponse = data.data;
-        setStatus(jobStatus.status);
-        if (jobStatus.progress !== undefined) setProgress(jobStatus.progress);
-        if (jobStatus.message) setMessage(jobStatus.message.toUpperCase());
+        if (result.success && result.data) {
+          setStatus(result.data.status);
 
-        if (jobStatus.status === "complete") {
-          router.push(`/report/${jobId}`);
-        } else if (jobStatus.status === "failed") {
-          setError(jobStatus.error || "CRITICAL JOB FAILURE");
+          if (result.data.status === 'complete') {
+            router.push(`/report/${jobId}`);
+            return; // stop polling
+          }
+
+          if (result.data.status === 'failed') {
+            setError(result.error || result.data.error || 'Research pipeline failed.');
+            return; // stop polling
+          }
+        } else {
+          setError(result.error || 'Unexpected response from server');
+          return;
         }
       } catch (err: any) {
-        console.error("Status fetch error:", err);
+        if (!active) return;
+        // Network error — don't stop polling, just log it
+        console.warn('Poll failed, retrying...', err.message);
+      }
+
+      // Schedule next poll only if still active and not done
+      if (active) {
+        setTimeout(poll, 15000); // 15 seconds to avoid rate limits
       }
     };
 
-    fetchStatus();
-    const interval = setInterval(fetchStatus, 5000);
-    return () => clearInterval(interval);
+    // Start first poll after 3 seconds (give backend time to start)
+    const initialTimeout = setTimeout(poll, 3000);
+
+    return () => {
+      active = false;
+      clearTimeout(initialTimeout);
+    };
   }, [jobId, router]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] w-full">
-      <div className="w-full max-w-xl space-y-8 terminal-card p-8 rounded-lg">
+    <div className="flex flex-col items-center justify-center min-h-[70vh] w-full p-4">
+      <div className="w-full max-w-xl space-y-8 terminal-card p-8 rounded-lg border border-[#00e5ff15] bg-[#0a0a0a]">
         <div className="space-y-2 text-left border-b border-[#00e5ff15] pb-4">
           <h1 className="text-xl font-light tracking-[0.2em] text-[#fafafa] uppercase">
-            RESEARCH IN PROGRESS
+            RESEARCH_STATUS
           </h1>
           <div className="flex justify-between items-center">
-            <span className="text-[10px] text-[#00e5ff60] font-mono tracking-widest">SESSION_ID: {jobId}</span>
-            <span className="text-[10px] text-[#00e5ff60] font-mono tracking-widest uppercase">{status}</span>
+            <span className="text-[10px] text-[#00e5ff60] font-mono tracking-widest">
+              JOB_ID: {jobId}
+            </span>
+            <span className={`text-[10px] font-mono tracking-widest uppercase ${status === 'failed' ? 'text-red-500' : 'text-[#00e5ff]'}`}>
+              {status}
+            </span>
           </div>
         </div>
 
         <div className="space-y-6">
           {error ? (
-            <div className="space-y-4">
-              <div className="p-4 bg-[#f43f5e05] border border-[#f43f5e20] rounded text-[#f43f5e] font-mono text-xs tracking-wider">
-                SYSTEM_ERROR: {error}
+            <div className="space-y-6">
+              <div className="p-4 bg-red-500/5 border border-red-500/20 rounded text-red-400 font-mono text-xs tracking-wider leading-relaxed">
+                <div className="font-bold mb-1 uppercase tracking-tighter">SYSTEM_ERROR_LOG:</div>
+                {error}
               </div>
-              <button
-                onClick={() => router.push("/")}
-                className="w-full py-3 border border-[#f43f5e40] text-[#f43f5e] rounded hover:bg-[#f43f5e10] transition-all text-xs tracking-widest uppercase font-bold"
+              <Link
+                href="/"
+                className="flex items-center justify-center gap-2 w-full py-3 border border-red-500/40 text-red-500 rounded hover:bg-red-500/10 transition-all text-xs tracking-widest uppercase font-bold"
               >
-                ABORT AND RESTART
-              </button>
+                <ArrowLeft className="w-3 h-3" />
+                Go Back to Research
+              </Link>
             </div>
           ) : (
             <div className="space-y-8">
-              <div className="relative h-1 w-full bg-[#ffffff05] rounded-full overflow-hidden">
+              {/* Progress Indicator */}
+              <div className="relative h-1 w-full bg-white/5 rounded-full overflow-hidden">
                 <div
-                  className="absolute top-0 left-0 h-full bg-[#00e5ff] transition-all duration-1000 shadow-[0_0_10px_rgba(0,229,255,0.5)]"
-                  style={{ width: `${Math.max(progress, 5)}%` }}
+                  className={`absolute top-0 left-0 h-full bg-[#00e5ff] transition-all duration-1000 shadow-[0_0_10px_rgba(0,229,255,0.5)]`}
+                  style={{ 
+                    width: status === 'queued' ? '15%' : status === 'running' ? '60%' : '5%' 
+                  }}
                 />
               </div>
               
-              <div className="flex items-center gap-4 text-[#00e5ff] animate-pulse">
+              <div className="flex items-center gap-4 text-[#00e5ff]">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span className="text-xs font-mono tracking-[0.2em] uppercase">
-                  {message}
+                <span className="text-xs font-mono tracking-[0.2em] uppercase animate-pulse">
+                  {status === 'queued' ? 'AWAITING_RESOURCES...' : 'ANALYZING_FINANCIAL_DATA...'}
                 </span>
               </div>
+
+              <Link
+                href="/"
+                className="flex items-center justify-center gap-2 text-[#00e5ff60] hover:text-[#00e5ff] transition-colors text-[10px] font-mono tracking-widest uppercase mt-4"
+              >
+                <ArrowLeft className="w-3 h-3" />
+                Go Back
+              </Link>
             </div>
           )}
         </div>
