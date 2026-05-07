@@ -34,7 +34,7 @@ enough information to produce a comprehensive analysis.
 | sec             | Search SEC EDGAR filings (10-K, 10-Q, 8-K, etc.)                            | ticker: str                                                                      |
 | transcript      | Search and retrieve earnings call transcripts                               | ticker: str, quarters_back: int                                                  |
 | news            | Search financial news articles                                              | ticker: str, days_back: int (opt)                                                |
-| web_search       | General web search for financial information                                | query: str                                                                       |
+| websearch       | General web search for financial information                                | query: str                                                                       |
 | financial_data  | Retrieve financial metrics, ratios, and stock prices from APIs              | ticker: str, statement_type: str ("income"|"balance"|"cashflow"), period: str ("annual"|"quarterly") |
 | sentiment       | Analyze sentiment of text (positive/negative/neutral with score)            | query: str                                                                       |
 | profile         | Get company profile (sector, industry, market cap, description)             | ticker: str                                                                      |
