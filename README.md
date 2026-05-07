@@ -60,7 +60,7 @@ The agent utilizes a registry of specialized tools for deep financial analysis:
 
 ## Memory System — How It Works
 
-The agent uses a **two-layer memory architecture** to avoid redundant research across sessions:
+The agent uses a **three-layer memory architecture** to avoid redundant research across sessions:
 
 ### Layer 1: Working Memory (per-session)
 - A Python `list` that accumulates tool results during a single agent run.
@@ -72,7 +72,10 @@ The agent uses a **two-layer memory architecture** to avoid redundant research a
 - Enables **similarity search** across all past research sessions.
 - Survives restarts — persisted to `memory/faiss_index.bin` + `memory/metadata.json`.
 
-### How the two layers interact
+### Layer 3: Episodic Memory (JSON-persisted)
+- A JSON-persisted episodic store that records structured episodes from each research run, tracking tool reliability, strategy effectiveness, and error patterns to improve future sessions.
+
+### How the three layers interact
 
 ```
 Session Start
