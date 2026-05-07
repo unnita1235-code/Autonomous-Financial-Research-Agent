@@ -1,4 +1,4 @@
-# Autonomous Financial Research Agent
+# Project1A-Unnita-AutonomousFinancialResearchAgent
 
 ## Live Demo
 - Frontend: https://autonomous-financial-research-agent.vercel.app
@@ -207,22 +207,44 @@ python test_agent.py
 
 ## Project Structure
 ```
+├── agent/
+│   ├── circuit_breaker.py
+│   ├── core.py
+│   ├── disambiguation.py
+│   ├── error_handler.py
+│   ├── fallback_chains.py
+│   └── query_analyzer.py
 ├── agents/
-│   ├── __init__.py
-│   ├── llm_client.py      # OpenAI / Anthropic chat client
-│   ├── prompts.py          # System prompt + user prompt builder
-│   └── react_loop.py       # Core ReAct loop with semantic memory
-├── memory/
-│   ├── __init__.py
-│   ├── chunker.py          # Token-aware text chunking (tiktoken)
-│   ├── embedder.py         # OpenAI embedding + L2 normalisation
-│   └── vector_store.py     # FAISS IndexFlatIP vector store
+│   ├── llm_client.py
+│   ├── prompts.py
+│   └── react_loop.py
 ├── tools/
-│   ├── __init__.py
-│   ├── sec_tool.py         # SEC EDGAR financial data
-│   ├── transcript_tool.py  # Earnings call transcripts
-│   └── news_tool.py        # News sentiment analysis
-├── test_agent.py            # Agent integration test
-├── test_memory.py           # Memory system tests
+│   ├── calculation_engine.py
+│   ├── company_profile.py
+│   ├── fact_checker.py
+│   ├── financial_data_api.py
+│   ├── news_sentiment.py
+│   ├── news_tool.py
+│   ├── peer_comparison.py
+│   ├── report_generator.py
+│   ├── sec_tool.py
+│   ├── transcript_tool.py
+│   ├── vector_db_search.py
+│   └── web_search.py
+├── synthesis/
+│   ├── conflict_detector.py
+│   ├── engine.py
+│   ├── extractor.py
+│   ├── normalizer.py
+│   ├── resolver.py
+│   └── narrative.py
+├── evaluation/
+│   ├── dashboard.py
+│   └── metrics.py
+├── memory/
+│   ├── chunker.py
+│   ├── embedder.py
+│   ├── episodic.py
+│   └── vector_store.py
 └── README.md
 ```

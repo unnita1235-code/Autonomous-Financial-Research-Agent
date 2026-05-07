@@ -17,7 +17,7 @@ async def fetch_web_results(query: str, num_results: int = 10, date_range: str =
     api_key = os.getenv("TAVILY_API_KEY")
     if not api_key:
         logger.error("TAVILY_API_KEY not found in environment")
-        return [{"error": "websearch_failed", "fallback": "use_sec_tool"}]
+        return {"error": "websearch_failed", "message": "TAVILY_API_KEY not found"}
 
     payload = {
         "api_key": api_key,
@@ -46,4 +46,4 @@ async def fetch_web_results(query: str, num_results: int = 10, date_range: str =
             return results
     except Exception as e:
         logger.error(f"Web search failed: {e}")
-        return [{"error": "websearch_failed", "fallback": "use_sec_tool"}]
+        return {"error": "websearch_failed", "message": str(e)}

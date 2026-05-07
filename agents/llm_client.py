@@ -123,23 +123,49 @@ class LLMClient:
     ) -> str:
         """
         Send a list of messages and return the assistant's text reply.
-
-        Args:
-            messages:        Standard chat-completion message list.
-                             [{"role": "system"|"user"|"assistant", "content": str}, ...]
-            response_format: "json_object" (default, for agent loop) or
-                             "text" (for report generation / narrative sections).
-                             Only affects OpenAI; Anthropic always returns text.
-
-        Returns:
-            The raw text content of the assistant's response.
+        Includes exponential backoff for rate limits.
         """
-        if self.provider in ("openai", "groq"):
-            return self._chat_openai(messages, response_format)
-        elif self.provider == "anthropic":
-            return self._chat_anthropic(messages, response_format)
-        else:
-            return self._chat_gemini(messages, response_format)
+        import time
+        import random
+
+        max_retries = 3
+        backoff_base = 2
+        
+        for attempt in range(max_retries + 1):
+            try:
+                if self.provider in ("openai", "groq"):
+                    return self._chat_openai(messages, response_format)
+                elif self.provider == "anthropic":
+                    return self._chat_anthropic(messages, response_format)
+                else:
+                    return self._chat_gemini(messages, response_format)
+            except Exception as e:
+                error_str = str(e).lower()
+                is_rate_limit = "rate limit" in error_str or "429" in error_str
+                
+                if is_rate_limit and attempt < max_retries:
+                    # Exponential backoff with jitter
+                    wait_time = (backoff_base ** attempt) + random.uniform(0, 1)
+                    # If it's Groq, they often tell us how long to wait
+                    if "retry after" in error_str or "try again in" in error_str:
+                        try:
+                            # Attempt to extract wait time if provided in message
+                            import re
+                            match = re.search(r"try again in ([\d\.]+)s", error_str)
+                            if match:
+                                wait_time = float(match.group(1)) + 1.0
+                        except:
+                            pass
+                    
+                    logger.warning(
+                        "Rate limit hit (%s). Retrying in %.2fs (attempt %d/%d)...",
+                        self.provider, wait_time, attempt + 1, max_retries
+                    )
+                    time.sleep(wait_time)
+                    continue
+                else:
+                    logger.error("LLM call failed after %d retries: %s", attempt, e)
+                    raise e
 
     # ── OpenAI implementation ───────────────────────────────────────────
     def _chat_openai(

@@ -82,10 +82,16 @@ async def run_research_pipeline(
         # Mark Complete
         JOB_STORE[job_id]["status"] = "complete"
         JOB_STORE[job_id]["report"] = report
+        JOB_STORE[job_id]["memory"] = agent_result.get("memory", [])
+        JOB_STORE[job_id]["elapsed_sec"] = agent_result.get("elapsed_sec", 0.0)
         
         # Phase 6: Evaluation & Dashboard
         logger.info(f"Job {job_id}: Running performance evaluation...")
-        eval_metrics = calculate_metrics(report_dict=report, memory=agent_result["memory"])
+        eval_metrics = calculate_metrics(
+            report_dict=report, 
+            memory=agent_result["memory"], 
+            elapsed_sec=agent_result.get("elapsed_sec", 0.0)
+        )
         generate_dashboard(metrics=eval_metrics, output_path=f"evaluation/dashboard_{job_id}.html")
         
         logger.info(f"Job {job_id} successfully completed.")

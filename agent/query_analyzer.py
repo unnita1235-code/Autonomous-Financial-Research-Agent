@@ -42,5 +42,5 @@ class QueryAnalyzer:
                 "intent": "earnings_analysis",
                 "ticker": None,
                 "is_ambiguous": True,
-                "suggested_tools": ["websearch", "sec", "transcript"]
+                "suggested_tools": ["web_search", "sec", "transcript"]
             }

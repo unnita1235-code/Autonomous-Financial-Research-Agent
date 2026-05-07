@@ -43,8 +43,9 @@ def synthesize(memory: List[Dict[str, Any]]) -> Dict[str, Any]:
     all_raw_metrics = []
     for item in memory:
         # We only care about tool outputs
-        if "output" in item and isinstance(item["output"], dict):
-            raw_metrics = extract_metrics(item["output"])
+        output = item.get("tool_output") or item.get("output")
+        if output and isinstance(output, dict):
+            raw_metrics = extract_metrics(output)
             all_raw_metrics.extend(raw_metrics)
 
     if not all_raw_metrics:

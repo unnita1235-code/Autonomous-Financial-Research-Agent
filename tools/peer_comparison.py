@@ -1,7 +1,7 @@
 import logging
 from typing import List, Dict, Optional
-from .companyprofile import get_company_profile
-from .financialdataapi import fetch_financial_data
+from .company_profile import get_company_profile
+from .financial_data_api import fetch_financial_data
 
 logger = logging.getLogger(__name__)
 

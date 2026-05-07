@@ -3,9 +3,9 @@ from typing import Dict, Any, Optional
 from agents.react_loop import run_agent
 from agents.llm_client import LLMClient
 from tools import TOOL_REGISTRY
-from .errorhandler import handle_agent_error
-from .circuitbreaker import CircuitBreaker
-from .queryanalyzer import QueryAnalyzer
+from .error_handler import handle_agent_error
+from .circuit_breaker import CircuitBreaker
+from .query_analyzer import QueryAnalyzer
 from .disambiguation import resolve_ambiguity, extract_potential_tickers
 from security.prompt_injection_shield import shield
 from memory.episodic import EpisodicMemory
@@ -44,8 +44,8 @@ class FinancialAgent:
                 query = await resolve_ambiguity(query, potential)
 
             # 3. Retrieve Layer 3 (Episodic) Context
-            episodic_context = self.episodic_memory.get_relevant_lessons(query)
-            logger.info(f"Retrieved episodic context: {episodic_context[:100]}...")
+            # We pass intent (query_type) to run_agent so it can handle episodic retrieval internally
+            intent = analysis.get("intent", "generic")
 
             # 4. Run ReAct Loop
             logger.info(f"Executing agent loop for: {query}")
@@ -54,17 +54,13 @@ class FinancialAgent:
                 tool_registry=TOOL_REGISTRY,
                 llm_client=self.llm_client,
                 vector_store=vector_store,
-                episodic_context=episodic_context
+                episodic_memory=self.episodic_memory,
+                query_type=intent,
+                circuit_breaker=cb
             )
             
-            # 5. Save Episode to Layer 3
-            if result.get("status") == "success":
-                self.episodic_memory.save_episode(
-                    query=query,
-                    strategy=result.get("tools_used", []),
-                    outcome=result.get("summary", "Success"),
-                    lessons=result.get("lessons", "Standard path successful.")
-                )
+            # Note: Episodic recording is now handled internally by run_agent
+            # to capture granular tool-level performance metrics.
 
             cb.record_success()
             return result

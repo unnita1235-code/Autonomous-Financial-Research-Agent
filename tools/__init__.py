@@ -1,15 +1,15 @@
 from .sec_tool import fetch_sec_facts_async
 from .transcript_tool import fetch_transcript_async
 from .news_tool import fetch_news_async
-from .websearch import fetch_web_results
-from .financialdataapi import fetch_financial_data
-from .newssentiment import analyze_sentiment
-from .companyprofile import get_company_profile
-from .peercomparison import get_peer_comparison
-from .reportgenerator import generate_report
-from .factchecker import verify_claim
-from .calculationengine import calculate
-from .vectordbsearch import vector_search
+from .web_search import fetch_web_results
+from .financial_data_api import fetch_financial_data
+from .news_sentiment import analyze_sentiment
+from .company_profile import get_company_profile
+from .peer_comparison import get_peer_comparison
+from .report_generator import generate_report
+from .fact_checker import verify_claim
+from .calculation_engine import calculate
+from .vector_db_search import vector_search
 
 TOOL_REGISTRY = {
     "sec": fetch_sec_facts_async,

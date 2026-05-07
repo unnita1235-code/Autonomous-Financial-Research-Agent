@@ -56,6 +56,7 @@ async def fetch_financial_data(ticker: str, statement_type: str, period: str, ye
             logger.warning(f"Failed to derive some ratios for {ticker}: {e}")
 
         return {
+            "source": "yfinance",
             "ticker": ticker,
             "statement_type": statement_type,
             "data": raw_data,

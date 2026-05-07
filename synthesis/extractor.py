@@ -227,12 +227,62 @@ def _extract_from_news(tool_output: Dict[str, Any]) -> List[Dict[str, Any]]:
     return metrics
 
 
+def _extract_from_yfinance(tool_output: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Extract metrics from yfinance-derived financial data.
+    """
+    metrics = []
+    data = tool_output.get("data", {})
+    ratios = tool_output.get("derived_ratios", {})
+
+    # Extract from raw data (latest year)
+    if data:
+        latest_year = sorted(data.keys())[-1]
+        year_data = data[latest_year]
+        
+        # Mapping yfinance keys to canonical keys
+        mapping = {
+            "Total Revenue": "revenue",
+            "Net Income": "net_income",
+            "Diluted EPS": "eps",
+            "Total Assets": "total_assets",
+            "Total Liabilities Net Minority Interest": "total_liabilities"
+        }
+        
+        for yf_key, canonical in mapping.items():
+            if yf_key in year_data:
+                metrics.append({
+                    "metric_name": canonical,
+                    "value": year_data[yf_key],
+                    "raw": str(year_data[yf_key]),
+                    "source": "yfinance",
+                    "period": latest_year,
+                    "is_qualitative": False
+                })
+
+    # Extract ratios
+    for ratio_name, value in ratios.items():
+        if value is not None:
+            metrics.append({
+                "metric_name": ratio_name,
+                "value": value,
+                "raw": str(value),
+                "source": "yfinance",
+                "period": "latest",
+                "is_qualitative": False
+            })
+
+    return metrics
+
+
 # ── Source → extractor dispatch ─────────────────────────────────────────────
 _EXTRACTORS = {
-    "sec_edgar":   _extract_from_sec,
-    "sec":         _extract_from_sec,       # alias (tool_name in registry is "sec")
-    "transcript":  _extract_from_transcript,
-    "news":        _extract_from_news,
+    "sec_edgar":      _extract_from_sec,
+    "sec":            _extract_from_sec,
+    "transcript":     _extract_from_transcript,
+    "news":           _extract_from_news,
+    "yfinance":       _extract_from_yfinance,
+    "financial_data": _extract_from_yfinance,
 }
 
 

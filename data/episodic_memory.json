@@ -1,0 +1,427 @@
+[
+  {
+    "episode_id": "ep_0001",
+    "timestamp": "2026-05-07T02:32:31.050310Z",
+    "query": "What was Apple's revenue in Q3 2024?",
+    "query_type": "generic",
+    "tools_used": [
+      "sec",
+      "sec",
+      "sec",
+      "sec",
+      "sec",
+      "financial_data",
+      "financial_data",
+      "financial_data"
+    ],
+    "tools_succeeded": [
+      "sec",
+      "sec",
+      "sec",
+      "sec",
+      "sec",
+      "financial_data",
+      "financial_data",
+      "financial_data"
+    ],
+    "tools_failed": [],
+    "fallbacks_triggered": [
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      },
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      },
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      }
+    ],
+    "strategy": "sec -> sec -> sec -> sec -> sec -> financial_data -> financial_data -> financial_data",
+    "strategy_effectiveness": 0.3,
+    "synthesis_conflicts_found": 0,
+    "synthesis_conflicts_resolved": 0,
+    "total_duration_seconds": 132.28,
+    "error_patterns": [],
+    "lessons": [
+      "Standard research path completed."
+    ],
+    "metrics": {}
+  },
+  {
+    "episode_id": "ep_0002",
+    "timestamp": "2026-05-07T02:35:21.346252Z",
+    "query": "Compare Apple's Q3 2024 reported revenue with analyst expectations",
+    "query_type": "generic",
+    "tools_used": [
+      "sec",
+      "financial_data",
+      "financial_data",
+      "financial_data",
+      "websearch",
+      "financial_data",
+      "financial_data",
+      "financial_data"
+    ],
+    "tools_succeeded": [
+      "sec",
+      "financial_data",
+      "financial_data",
+      "financial_data",
+      "websearch",
+      "financial_data",
+      "financial_data",
+      "financial_data"
+    ],
+    "tools_failed": [],
+    "fallbacks_triggered": [
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      },
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      },
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      },
+      {
+        "from": "websearch",
+        "to": "news",
+        "success": true
+      },
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      },
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      },
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      }
+    ],
+    "strategy": "sec -> financial_data -> financial_data -> financial_data -> websearch -> financial_data -> financial_data -> financial_data",
+    "strategy_effectiveness": 0.3,
+    "synthesis_conflicts_found": 0,
+    "synthesis_conflicts_resolved": 0,
+    "total_duration_seconds": 170.29,
+    "error_patterns": [],
+    "lessons": [
+      "Standard research path completed."
+    ],
+    "metrics": {}
+  },
+  {
+    "episode_id": "ep_0003",
+    "timestamp": "2026-05-07T02:38:44.055685Z",
+    "query": "Analyze discrepancies between Tesla's reported delivery numbers and third-party estimates for Q2 2024",
+    "query_type": "generic",
+    "tools_used": [
+      "sec",
+      "websearch",
+      "news",
+      "news",
+      "news",
+      "websearch",
+      "sec",
+      "financial_data"
+    ],
+    "tools_succeeded": [
+      "sec",
+      "websearch",
+      "news",
+      "news",
+      "news",
+      "websearch",
+      "sec",
+      "financial_data"
+    ],
+    "tools_failed": [],
+    "fallbacks_triggered": [
+      {
+        "from": "websearch",
+        "to": "news",
+        "success": true
+      },
+      {
+        "from": "websearch",
+        "to": "news",
+        "success": true
+      },
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      }
+    ],
+    "strategy": "sec -> websearch -> news -> news -> news -> websearch -> sec -> financial_data",
+    "strategy_effectiveness": 0.3,
+    "synthesis_conflicts_found": 0,
+    "synthesis_conflicts_resolved": 0,
+    "total_duration_seconds": 202.71,
+    "error_patterns": [],
+    "lessons": [
+      "Standard research path completed."
+    ],
+    "metrics": {}
+  },
+  {
+    "episode_id": "ep_0004",
+    "timestamp": "2026-05-07T02:41:29.562889Z",
+    "query": "Track Microsoft's cloud revenue growth trajectory over the last 4 quarters and project next quarter",
+    "query_type": "generic",
+    "tools_used": [
+      "sec",
+      "financial_data",
+      "financial_data",
+      "financial_data",
+      "financial_data",
+      "financial_data",
+      "financial_data",
+      "financial_data"
+    ],
+    "tools_succeeded": [
+      "sec",
+      "financial_data",
+      "financial_data",
+      "financial_data",
+      "financial_data",
+      "financial_data",
+      "financial_data"
+    ],
+    "tools_failed": [
+      "financial_data"
+    ],
+    "fallbacks_triggered": [
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      },
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      },
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      },
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      },
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      },
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      }
+    ],
+    "strategy": "sec -> financial_data -> financial_data -> financial_data -> financial_data -> financial_data -> financial_data -> financial_data",
+    "strategy_effectiveness": 0.3,
+    "synthesis_conflicts_found": 0,
+    "synthesis_conflicts_resolved": 0,
+    "total_duration_seconds": 165.51,
+    "error_patterns": [
+      "financial_data_chain_failure"
+    ],
+    "lessons": [
+      "Standard research path completed."
+    ],
+    "metrics": {}
+  },
+  {
+    "episode_id": "ep_0005",
+    "timestamp": "2026-05-07T02:44:10.444821Z",
+    "query": "Assess NVIDIA's market position by combining earnings data with market sentiment analysis",
+    "query_type": "generic",
+    "tools_used": [
+      "sec",
+      "websearch",
+      "websearch",
+      "financial_data",
+      "financial_data",
+      "financial_data",
+      "financial_data",
+      "financial_data"
+    ],
+    "tools_succeeded": [
+      "sec",
+      "websearch",
+      "websearch"
+    ],
+    "tools_failed": [
+      "financial_data",
+      "financial_data",
+      "financial_data",
+      "financial_data",
+      "financial_data"
+    ],
+    "fallbacks_triggered": [
+      {
+        "from": "websearch",
+        "to": "news",
+        "success": true
+      },
+      {
+        "from": "websearch",
+        "to": "news",
+        "success": true
+      }
+    ],
+    "strategy": "sec -> websearch -> websearch -> financial_data -> financial_data -> financial_data -> financial_data -> financial_data",
+    "strategy_effectiveness": 0.3,
+    "synthesis_conflicts_found": 0,
+    "synthesis_conflicts_resolved": 0,
+    "total_duration_seconds": 160.88,
+    "error_patterns": [
+      "financial_data_chain_failure"
+    ],
+    "lessons": [
+      "Standard research path completed."
+    ],
+    "metrics": {}
+  },
+  {
+    "episode_id": "ep_0006",
+    "timestamp": "2026-05-07T02:46:53.135638Z",
+    "query": "Compare Amazon's AWS margins against Microsoft Azure and Google Cloud",
+    "query_type": "generic",
+    "tools_used": [
+      "sec",
+      "sec",
+      "sec",
+      "calculate",
+      "financial_data",
+      "financial_data",
+      "financial_data",
+      "financial_data"
+    ],
+    "tools_succeeded": [
+      "sec",
+      "sec",
+      "sec",
+      "financial_data",
+      "financial_data",
+      "financial_data",
+      "financial_data"
+    ],
+    "tools_failed": [
+      "calculate"
+    ],
+    "fallbacks_triggered": [
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      },
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      },
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      },
+      {
+        "from": "financial_data",
+        "to": "sec",
+        "success": true
+      }
+    ],
+    "strategy": "sec -> sec -> sec -> calculate -> financial_data -> financial_data -> financial_data -> financial_data",
+    "strategy_effectiveness": 0.3,
+    "synthesis_conflicts_found": 0,
+    "synthesis_conflicts_resolved": 0,
+    "total_duration_seconds": 162.69,
+    "error_patterns": [
+      "calculate_chain_failure"
+    ],
+    "lessons": [
+      "Standard research path completed."
+    ],
+    "metrics": {}
+  },
+  {
+    "episode_id": "ep_0007",
+    "timestamp": "2026-05-07T02:50:59.602393Z",
+    "query": "Evaluate the regulatory risk exposure of Meta Platforms considering recent antitrust developments",
+    "query_type": "generic",
+    "tools_used": [
+      "sec",
+      "news",
+      "sentiment",
+      "websearch",
+      "sec",
+      "websearch",
+      "websearch",
+      "sec"
+    ],
+    "tools_succeeded": [
+      "sec",
+      "news",
+      "websearch",
+      "sec",
+      "websearch",
+      "websearch",
+      "sec"
+    ],
+    "tools_failed": [
+      "sentiment"
+    ],
+    "fallbacks_triggered": [
+      {
+        "from": "websearch",
+        "to": "news",
+        "success": true
+      },
+      {
+        "from": "websearch",
+        "to": "news",
+        "success": true
+      },
+      {
+        "from": "websearch",
+        "to": "news",
+        "success": true
+      }
+    ],
+    "strategy": "sec -> news -> sentiment -> websearch -> sec -> websearch -> websearch -> sec",
+    "strategy_effectiveness": 0.3,
+    "synthesis_conflicts_found": 0,
+    "synthesis_conflicts_resolved": 0,
+    "total_duration_seconds": 246.46,
+    "error_patterns": [
+      "sentiment_chain_failure"
+    ],
+    "lessons": [
+      "Standard research path completed."
+    ],
+    "metrics": {}
+  }
+]

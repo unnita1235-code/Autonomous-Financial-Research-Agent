@@ -14,11 +14,11 @@ The Agentic AI architecture implemented for Zetheta Algorithms successfully meet
 ## Architecture Highlights
 - **ReAct Loop:** Implemented in `agents/react_loop.py` with a max iteration limit of 8, ensuring thorough exploration without infinite loops.
 - **Semantic Memory:** Utilizes FAISS with L2-normalized embeddings (1536 dims) for high-precision retrieval of past research.
-- **Multi-Source Synthesis:** Conflict resolution logic in `synthesis/conflictresolver.py` prioritizes official SEC filings over news sentiment during discrepancies.
+- **Multi-Source Synthesis:** Conflict resolution logic in `synthesis/conflict_resolver.py` prioritizes official SEC filings over news sentiment during discrepancies.
 
 ## Challenges Resolved
 1. **Ambiguous Queries:** Handled by `agent/disambiguation.py` through ticker extraction and clarification logic.
-2. **Rate Limiting:** Managed via `agent/circuitbreaker.py` and `app/limiter.py`.
+2. **Rate Limiting:** Managed via `agent/circuit_breaker.py` and `app/limiter.py`.
 3. **Data Conflict:** Addressed through a hierarchical trust model in the synthesis engine.
 
 ## Conclusion

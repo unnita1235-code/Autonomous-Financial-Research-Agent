@@ -7,9 +7,9 @@ logger = logging.getLogger("VerifyImports")
 def test_imports():
     modules_to_test = [
         "agent.core",
-        "agent.errorhandler",
-        "agent.circuitbreaker",
-        "agent.queryanalyzer",
+        "agent.error_handler",
+        "agent.circuit_breaker",
+        "agent.query_analyzer",
         "memory.episodic",
         "memory.vector_store",
         "synthesis.engine",

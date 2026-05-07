@@ -1,8 +1,8 @@
 import logging
 import re
 from typing import List, Dict, Optional
-from .websearch import fetch_web_results
-from .financialdataapi import fetch_financial_data
+from .web_search import fetch_web_results
+from .financial_data_api import fetch_financial_data
 
 logger = logging.getLogger(__name__)
 

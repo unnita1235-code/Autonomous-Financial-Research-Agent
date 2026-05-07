@@ -109,9 +109,14 @@ async def get_report(request: Request, job_id: str) -> Any:
             error=job.get("error", "Job failed with an unknown error.")
         )
         
+    report_data = job.get("report")
+    if report_data and "memory" in job:
+        report_data["memory"] = job["memory"]
+        report_data["elapsed_sec"] = job.get("elapsed_sec", 0.0)
+        
     return ReportResponse(
         success=True,
-        data=job.get("report"),
+        data=report_data,
         error=None
     )
 

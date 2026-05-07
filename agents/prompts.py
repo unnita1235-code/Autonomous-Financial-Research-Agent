@@ -29,11 +29,20 @@ company or financial topic by calling tools, then signal when you have \
 enough information to produce a comprehensive analysis.
 
 ### Available tools
-| name         | description                                  | required args                        |
-|------------- |----------------------------------------------|--------------------------------------|
-| sec          | SEC EDGAR financial facts (revenue, EPS …)   | ticker: str                          |
-| transcript   | Earnings-call transcript with sentiment      | ticker: str, quarters_back: int      |
-| news         | Recent news headlines + sentiment score       | ticker: str, days_back: int (opt)    |
+| name            | description                                                                 | required args                                                                    |
+|-----------------|-----------------------------------------------------------------------------|----------------------------------------------------------------------------------|
+| sec             | Search SEC EDGAR filings (10-K, 10-Q, 8-K, etc.)                            | ticker: str                                                                      |
+| transcript      | Search and retrieve earnings call transcripts                               | ticker: str, quarters_back: int                                                  |
+| news            | Search financial news articles                                              | ticker: str, days_back: int (opt)                                                |
+| web_search       | General web search for financial information                                | query: str                                                                       |
+| financial_data  | Retrieve financial metrics, ratios, and stock prices from APIs              | ticker: str, statement_type: str ("income"|"balance"|"cashflow"), period: str ("annual"|"quarterly") |
+| sentiment       | Analyze sentiment of text (positive/negative/neutral with score)            | query: str                                                                       |
+| profile         | Get company profile (sector, industry, market cap, description)             | ticker: str                                                                      |
+| peer_comparison | Compare a company against industry peers on financial metrics               | ticker: str                                                                      |
+| report_gen      | Generate formatted research report sections                                 | template_name: str, sections: dict, sources: list                                |
+| fact_check      | Cross-reference claims against known financial data sources                 | claim: str                                                                       |
+| calculate       | Perform financial calculations (ratios, growth rates, valuations)            | calculation_type: str, inputs: dict                                              |
+| vector_search   | Search the semantic memory (FAISS vector store) for past research           | query: str                                                                       |
 
 ### Output format — STRICT JSON only
 You MUST respond with a single JSON object matching this schema.  \
@@ -58,15 +67,16 @@ Do NOT wrap it in markdown code fences.  Do NOT add any text before or after.
 
 
 # ── User prompt builder ─────────────────────────────────────────────────────
-def build_user_prompt(query: str, memory: List[Dict[str, Any]]) -> str:
+def build_user_prompt(query: str, memory: List[Dict[str, Any]], episodic_guidance: Optional[str] = None) -> str:
     """
-    Builds the per-iteration user prompt that injects the research query
-    and the accumulated working memory into the conversation.
+    Builds the per-iteration user prompt that injects the research query,
+    accumulated working memory, and episodic learning into the conversation.
 
     Args:
         query:  The original research question from the user.
         memory: A list of dicts — each entry is one prior iteration's
                 result containing the LLM decision + tool output.
+        episodic_guidance: Optional string containing lessons and metrics from past episodes.
 
     Returns:
         A formatted string ready to be sent as the user message.
@@ -87,8 +97,12 @@ def build_user_prompt(query: str, memory: List[Dict[str, Any]]) -> str:
     else:
         memory_block = "Working memory: empty — no tools have been called yet."
 
-    return (
-        f"Research query: {query}\n\n"
-        f"{memory_block}\n\n"
-        f"Decide your next action.  Respond with JSON only."
-    )
+    prompt_parts = []
+    if episodic_guidance:
+        prompt_parts.append(episodic_guidance)
+    
+    prompt_parts.append(f"Research query: {query}")
+    prompt_parts.append(memory_block)
+    prompt_parts.append("Decide your next action.  Respond with JSON only.")
+
+    return "\n\n".join(prompt_parts)

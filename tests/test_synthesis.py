@@ -17,7 +17,7 @@ from synthesis.extractor import extract_metrics
 from synthesis.conflict_detector import detect_conflicts, CONFLICT_THRESHOLD_PCT
 from synthesis.resolver import (
     resolve_metric,
-    CONFIDENCE_SINGLE_SOURCE,
+    CONFIDENCE_BASE_REAL_DATA,
     CONFIDENCE_MULTI_AGREE,
     CONFIDENCE_CONFLICT_RESOLVED,
     CONFIDENCE_ERROR,
@@ -278,7 +278,7 @@ class TestResolveMetric:
         ]
         result = resolve_metric("revenue", entries)
         assert result["value"] == 85.8e9
-        assert result["confidence"] == CONFIDENCE_SINGLE_SOURCE
+        assert result["confidence"] == CONFIDENCE_BASE_REAL_DATA
         assert result["conflict_flagged"] is False
 
     def test_multi_agree(self):

@@ -1,22 +1,20 @@
 {
-  "internidentifier": "unnita1235",
-  "internname": "Unnita A",
-  "internemail": "unnita1235@gmail.com",
-  "projectcode": "1A",
-  "projecttitle": "Autonomous Financial Research Agent with Multi-Source Synthesis",
-  "submissiontype": "github",
-  "submissiondate": "2026-05-19T15:40:39Z",
-  "techstack": ["Python", "FastAPI", "Next.js", "OpenAI API", "FAISS", "SEC EDGAR API", "yfinance", "VADER Sentiment"],
-  "durationdays": 15,
-  "githubrepourl": "https://github.com/unnita1235-code/Autonomous-Financial-Research-Agent",
-  "assessmentcriteria": {
-    "architecturedesign": true,
-    "toolorchestration": true,
-    "memorysystem": true,
-    "errorhandling": true,
-    "evaluationframework": true,
-    "researchoutputquality": true,
-    "codequality": true,
-    "documentation": true
+  "project_name": "Autonomous Financial Research Agent",
+  "project_code": "Project1A",
+  "student_name": "[REPLACE WITH YOUR NAME]",
+  "student_id": "[REPLACE WITH YOUR ID]",
+  "submission_date": "2026-05-07",
+  "version": "1.0.0",
+  "tool_count": 12,
+  "memory_layers": 3,
+  "challenges_completed": 8,
+  "errors_identified": 7,
+  "repository_url": "https://github.com/unnita1235-code/Autonomous-Financial-Research-Agent",
+  "deployment_url": "https://autonomous-financial-research-agent.onrender.com",
+  "tech_stack": {
+    "backend": "Python/FastAPI",
+    "reasoning": "ReAct Loop",
+    "memory": "FAISS TF-IDF Vector Store",
+    "synthesis": "Multi-source conflict resolution"
   }
 }
