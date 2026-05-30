@@ -20,6 +20,19 @@ from .resolver import resolve_metric
 logger = logging.getLogger(__name__)
 
 
+def _infer_ticker(memory: List[Dict[str, Any]]) -> str:
+    """Extract ticker from agent memory tool outputs, or UNKNOWN."""
+    for item in memory:
+        decision = item.get("decision") or {}
+        tool_args = decision.get("tool_args") or {}
+        if tool_args.get("ticker"):
+            return str(tool_args["ticker"]).upper()
+        output = item.get("tool_output") or item.get("output") or {}
+        if isinstance(output, dict) and output.get("ticker"):
+            return str(output["ticker"]).upper()
+    return "UNKNOWN"
+
+
 def synthesize(memory: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Synthesize raw agent memory (tool outputs) into a resolved dict.
@@ -38,6 +51,7 @@ def synthesize(memory: List[Dict[str, Any]]) -> Dict[str, Any]:
             synthesis_quality:  Float [0, 1] representing data fidelity.
     """
     logger.info("Starting synthesis on %d memory items", len(memory))
+    ticker = _infer_ticker(memory)
 
     # ── 1. Extract all raw metrics ──────────────────────────────────────
     all_raw_metrics = []
@@ -51,6 +65,7 @@ def synthesize(memory: List[Dict[str, Any]]) -> Dict[str, Any]:
     if not all_raw_metrics:
         logger.warning("No metrics extracted during synthesis")
         return {
+            "ticker": ticker,
             "metrics": {},
             "conflicts_detected": [],
             "synthesis_quality": 0.0,
@@ -72,7 +87,8 @@ def synthesize(memory: List[Dict[str, Any]]) -> Dict[str, Any]:
     for (metric_name, period), entries in metric_groups.items():
         conflict = conflict_map.get((metric_name, period))
         resolved = resolve_metric(metric_name, entries, conflict)
-        
+        resolved["conflict"] = resolved.get("conflict_flagged", False)
+
         # Save to final dict (using canonical metric name as key)
         # If multiple periods exist for one metric, we prioritize "latest"
         if metric_name not in resolved_metrics or period == "latest" or period == "FY":
@@ -84,6 +100,7 @@ def synthesize(memory: List[Dict[str, Any]]) -> Dict[str, Any]:
     avg_conf = total_conf / len(resolved_metrics) if resolved_metrics else 0.0
 
     result = {
+        "ticker": ticker,
         "metrics": resolved_metrics,
         "conflicts_detected": conflicts,
         "synthesis_quality": round(avg_conf, 2),

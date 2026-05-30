@@ -363,16 +363,11 @@ async def run_agent(
         tools_used.append(tool_name)
 
         try:
-            # Use tool-level fallback chain as required by spec (ZeTheta PDF p. 13-14)
-            # Determine the primary query string for the tool
-            # (Fallback tools in the new spec typically take a single string query)
-            tool_query = tool_args.get("query") or tool_args.get("ticker") or tool_args.get("claim") or str(tool_args)
-
             fallback_result = await execute_with_fallback(
                 primary_tool=tool_name,
-                query=tool_query,
+                tool_args=tool_args,
                 tool_registry=tool_registry,
-                circuit_breaker=circuit_breaker
+                circuit_breaker=circuit_breaker,
             )
             
             tool_result = fallback_result.get("data")

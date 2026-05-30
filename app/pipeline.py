@@ -88,9 +88,11 @@ async def run_research_pipeline(
         # Phase 6: Evaluation & Dashboard
         logger.info(f"Job {job_id}: Running performance evaluation...")
         eval_metrics = calculate_metrics(
-            report_dict=report, 
-            memory=agent_result["memory"], 
-            elapsed_sec=agent_result.get("elapsed_sec", 0.0)
+            report,
+            {
+                "memory": agent_result["memory"],
+                "elapsed_sec": agent_result.get("elapsed_sec", 0.0),
+            },
         )
         generate_dashboard(metrics=eval_metrics, output_path=f"evaluation/dashboard_{job_id}.html")
         

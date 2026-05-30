@@ -9,7 +9,7 @@
   "memory_layers": 3,
   "challenges_completed": 8,
   "errors_identified": 7,
-  "repository_url": "https://github.com/unnita1235-code/Project1A-UNNI_T_A-AutonomousFinancialResearchAgent",
+  "repository_url": "https://github.com/unnita1235-code/Autonomous-Financial-Research-Agent",
   "deployment_url": "https://autonomous-financial-research-agent.onrender.com",
   "tech_stack": {
     "backend": "Python/FastAPI",
