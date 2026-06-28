@@ -1,0 +1,32 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy-backend:
+    name: Deploy to Render
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Trigger Render deploy
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys
+      
+      - name: Wait for deploy
+        run: sleep 90
+      
+      - name: Verify health
+        run: |
+          curl -f https://autonomous-financial-research-agent.onrender.com/health || exit 1
+
+  deploy-frontend:
+    name: Vercel deploys automatically on push
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Vercel auto-deploys from main branch"
