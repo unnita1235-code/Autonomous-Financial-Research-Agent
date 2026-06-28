@@ -16,6 +16,7 @@ from collections import defaultdict
 from .extractor import extract_metrics
 from .conflict_detector import detect_conflicts
 from .resolver import resolve_metric
+from .narrative import generate_conflict_narrative
 
 logger = logging.getLogger(__name__)
 
@@ -73,6 +74,15 @@ def synthesize(memory: List[Dict[str, Any]]) -> Dict[str, Any]:
 
     # ── 2. Detect conflicts ─────────────────────────────────────────────
     conflicts = detect_conflicts(all_raw_metrics)
+
+    conflict_narrative = None
+    flagged_conflicts = [c for c in conflicts if c.get("flagged")]
+    if flagged_conflicts:
+        try:
+            conflict_narrative = generate_conflict_narrative(flagged_conflicts, llm_client=None)
+        except Exception:
+            conflict_narrative = None
+
     # Create a map for fast lookup during resolution
     conflict_map = { (c["metric"], c["period"]): c for c in conflicts }
 
@@ -103,6 +113,7 @@ def synthesize(memory: List[Dict[str, Any]]) -> Dict[str, Any]:
         "ticker": ticker,
         "metrics": resolved_metrics,
         "conflicts_detected": conflicts,
+        "conflict_narrative": conflict_narrative,
         "synthesis_quality": round(avg_conf, 2),
     }
 

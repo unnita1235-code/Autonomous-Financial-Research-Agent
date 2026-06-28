@@ -14,14 +14,15 @@ from typing import Any
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, Request as FastAPIRequest
 
 from app.models import ResearchRequest, StatusResponse, ReportResponse, ApiResponse
-from app.pipeline import JOB_STORE, run_research_pipeline
+from app.job_store import JOB_STORE
+from app.pipeline import run_research_pipeline
 from app.limiter import limiter
 
 router = APIRouter()
 
 
 @router.post("/research", response_model=ApiResponse)
-@limiter.limit("5/minute")
+@limiter.limit("10/minute")
 async def start_research(
     request: Request,
     payload: ResearchRequest,
@@ -41,7 +42,7 @@ async def start_research(
     db_engine = getattr(app_state, "db_engine", None)
     
     # Initial job status
-    JOB_STORE[job_id] = {"status": "queued", "error": None, "report": None}
+    JOB_STORE.set(job_id, {"status": "queued", "error": None, "report": None})
     
     # Add to background tasks
     background_tasks.add_task(
@@ -61,7 +62,7 @@ async def start_research(
 
 
 @router.get("/status/{job_id}", response_model=StatusResponse)
-@limiter.limit("5/minute")
+@limiter.limit("60/minute")
 async def get_status(request: Request, job_id: str) -> Any:
     """
     Retrieve the current status of a background research job.
@@ -81,7 +82,7 @@ async def get_status(request: Request, job_id: str) -> Any:
 
 
 @router.get("/report/{job_id}", response_model=ReportResponse)
-@limiter.limit("5/minute")
+@limiter.limit("20/minute")
 async def get_report(request: Request, job_id: str) -> Any:
     """
     Retrieve the completed report for a background research job.
@@ -122,7 +123,6 @@ async def get_report(request: Request, job_id: str) -> Any:
 
 
 @router.get("/health", response_model=ApiResponse)
-@limiter.limit("5/minute")
 async def health_check(request: Request) -> Any:
     """
     Health check endpoint to verify the API is running.
@@ -131,4 +131,15 @@ async def health_check(request: Request) -> Any:
         success=True,
         data={"status": "ok", "version": "1.0.0"},
         error=None,
+    )
+
+@router.get("/health/db", response_model=ApiResponse)
+@limiter.limit("10/minute")
+async def db_health_check(request: Request) -> Any:
+    from app.db_health import check_db_health
+    result = check_db_health()
+    return ApiResponse(
+        success=result["status"] == "ok",
+        data=result,
+        error=result.get("message") if result["status"] != "ok" else None,
     )

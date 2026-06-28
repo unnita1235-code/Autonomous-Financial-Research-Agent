@@ -7,8 +7,7 @@ logger = logging.getLogger(__name__)
 PII_PATTERNS = {
     "email": re.compile(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'),
     "phone": re.compile(
-        r'\b(?:\+?1[-. ]?)?(?:\(?[2-9][0-8][0-9]\)?[-. ]?)?[2-9][0-9]{2}[-. ]?[0-9]{4}\b'
-        r'|\b\d{3}-\d{4}\b'
+        r'\b(?:\+?1[-.\s]?)?(?:\(?[0-9]{3}\)?[-.\s]?)[0-9]{3}[-.\s]?[0-9]{4}\b'
     ),
     "credit_card": re.compile(r'\b(?:\d[ -]*?){13,16}\b'),
     "ssn": re.compile(r'\b\d{3}-\d{2}-\d{4}\b'),

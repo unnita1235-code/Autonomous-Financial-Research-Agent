@@ -176,11 +176,11 @@ class LLMClient:
         kwargs: Dict[str, Any] = {
             "model": self.model,
             "messages": messages,
-            "temperature": 0.2,
-            "max_tokens": 1024,
+            "temperature": 0.1,
+            "max_tokens": 512 if self.provider == "groq" else 1024,
         }
         # Only set response_format for JSON mode; text mode uses default
-        if response_format == "json_object":
+        if response_format == "json_object" and self.provider not in ("groq",):
             kwargs["response_format"] = {"type": "json_object"}
 
         response = self._client.chat.completions.create(**kwargs)

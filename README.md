@@ -1,10 +1,62 @@
-# Project1A-Unnita-AutonomousFinancialResearchAgent
+# Autonomous Financial Research Agent
 
-## Live Demo
+**Live Demo**
 - Frontend: https://autonomous-financial-research-agent.vercel.app
 - Backend API: https://autonomous-financial-research-agent.onrender.com
 
-A production-grade autonomous agent that gathers and synthesises financial data using a **ReAct** (Reason + Act) loop with semantic memory.
+A production-grade autonomous agent that gathers and synthesizes financial data using a **ReAct** (Reason + Act) loop with semantic memory.
+
+## Quick Start
+
+### Prerequisites
+- Python 3.11+ and pip
+- Node.js 20+ and npm
+- A free [Groq API key](https://console.groq.com) (default LLM provider)
+- A free [NewsAPI key](https://newsapi.org)
+
+### 1. Install
+```bash
+git clone https://github.com/unnita1235-code/Autonomous-Financial-Research-Agent
+cd Autonomous-Financial-Research-Agent
+pip install -r requirements.txt
+```
+
+### 2. Configure
+```bash
+cp .env.example .env
+# Edit .env — minimum required: GROQ_API_KEY + NEWS_API_KEY
+```
+
+### 3. Run with Docker (recommended)
+```bash
+docker-compose up
+```
+
+### 4. Or run locally
+```bash
+# Backend (terminal 1)
+python database/migrate.py   # optional — needs DATABASE_URL
+uvicorn app.main:app --reload --port 8000
+
+# Frontend (terminal 2)
+cd frontend && npm install && npm run dev
+```
+
+### 5. Verify
+```bash
+bash verify_all.sh
+```
+
+## Honest performance metrics
+| Metric | Actual |
+|--------|--------|
+| Avg pipeline duration | 130–180 seconds |
+| Agent stop condition | max_iter (8) in most cases; "done" when data is sufficient |
+| Synthesis quality | 70–81% depending on API availability |
+| Cold start (Render free tier) | ~60–90 seconds |
+| LLM providers supported | Groq (default), OpenAI, Anthropic, Gemini |
+| Embedding backend | TF-IDF (free tier default), sentence-transformers or OpenAI (opt-in) |
+
 
 ## Architecture
 

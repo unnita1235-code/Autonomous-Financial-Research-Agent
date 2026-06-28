@@ -109,49 +109,49 @@ def _is_failed_result(result: Any) -> bool:
 
 
 async def _invoke_tool(tool_name: str, tool_func: Callable, tool_args: Dict[str, Any]) -> Any:
-    """Call a registry tool with kwargs matching its signature."""
     args = _normalize_args(tool_name, tool_args)
-    ticker = args.get("ticker")
-    query = args.get("query") or args.get("claim") or (str(ticker) if ticker else "")
+    ticker = args.get("ticker") or args.get("query", "")
+    query  = args.get("query") or args.get("claim") or ticker
 
     if tool_name == "sec":
-        return await _call(tool_func, args.get("ticker") or query)
+        return await _call(tool_func, ticker or query)
+
     if tool_name == "financial_data":
         return await _call(
             tool_func,
-            args["ticker"],
-            args["statement_type"],
-            args["period"],
+            ticker or query,
+            args.get("statement_type", "income"),
+            args.get("period", "quarterly"),
             args.get("years", 3),
         )
+
     if tool_name == "transcript":
-        return await _call(tool_func, args.get("ticker") or query, args.get("quarters_back", 3))
+        return await _call(tool_func, ticker or query, args.get("quarters_back", 3))
+
     if tool_name == "news":
-        return await _call(tool_func, args.get("ticker") or query, args.get("days_back", 30))
-    if tool_name == "websearch":
+        return await _call(tool_func, ticker or query, args.get("days_back", 30))
+
+    if tool_name in ("websearch", "web_search"):
         return await _call(tool_func, query, args.get("num_results", 10), args.get("date_range"))
+
     if tool_name == "sentiment":
-        return await _call(
-            tool_func,
-            query,
-            args.get("num_articles", 10),
-            args.get("lookback_days", 7),
-        )
+        return await _call(tool_func, query, args.get("num_articles", 10), args.get("lookback_days", 7))
+
     if tool_name == "profile":
-        return await _call(tool_func, args.get("ticker") or query)
+        return await _call(tool_func, ticker or query)
+
     if tool_name == "peer_comparison":
-        return await _call(
-            tool_func,
-            args.get("ticker") or query,
-            args.get("num_peers", 4),
-            args.get("metrics"),
-        )
+        return await _call(tool_func, ticker or query, args.get("num_peers", 4), args.get("metrics"))
+
     if tool_name == "calculate":
-        return await _call(tool_func, args["calculation_type"], args["inputs"])
-    if tool_name == "vector_search":
+        return await _call(tool_func, args.get("calculation_type", "pe_ratio"), args.get("inputs", {}))
+
+    if tool_name in ("vector_search", "vector_db_search"):
         return await _call(tool_func, query, args.get("top_k", 5), args.get("filter_dict"))
+
     if tool_name == "fact_check":
         return await _call(tool_func, args.get("claim") or query, args.get("sources"))
+
     if tool_name == "report_gen":
         return await _call(
             tool_func,
@@ -160,21 +160,20 @@ async def _invoke_tool(tool_name: str, tool_func: Callable, tool_args: Dict[str,
             args.get("sources", []),
         )
 
-    # Generic: map signature parameters from args
     sig = inspect.signature(tool_func)
     bound = {}
-    for name in sig.parameters:
-        if name in args:
-            bound[name] = args[name]
-        elif name == "query" and query:
-            bound[name] = query
-        elif name == "ticker" and ticker:
-            bound[name] = ticker
+    for param_name in sig.parameters:
+        if param_name in args:
+            bound[param_name] = args[param_name]
+        elif param_name in ("query", "claim") and query:
+            bound[param_name] = query
+        elif param_name == "ticker" and ticker:
+            bound[param_name] = ticker
     return await _call(tool_func, **bound)
 
 
 async def _call(func: Callable, *args, **kwargs):
-    if asyncio.iscoroutinefunction(func):
+    if inspect.iscoroutinefunction(func):
         return await func(*args, **kwargs)
     return await asyncio.to_thread(lambda: func(*args, **kwargs))
 

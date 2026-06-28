@@ -14,6 +14,11 @@ MALICIOUS_PATTERNS = [
     r"reveal your (secret|internal) (instructions|prompt)",
     r"execute (arbitrary )?code",
     r"bypass (all )?restrictions",
+    r"jailbreak",
+    r"DAN mode",
+    r"<\|im_start\|>",
+    r"\[INST\]",
+    r"### (Human|Assistant):",
 ]
 
 class InjectionShield:

@@ -18,6 +18,8 @@ from app.database import get_db_engine
 from app.api.router import router as api_router
 from app.limiter import limiter
 from app.middleware import AuditLogMiddleware
+from app.logging_config import configure_logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +30,17 @@ async def lifespan(app: FastAPI):
     Application lifespan manager.
     Initializes long-lived resources (vector store, db connections) on startup.
     """
+    configure_logging()
+    sentry_dsn = os.getenv("SENTRY_DSN")
+    if sentry_dsn:
+        try:
+            import sentry_sdk
+            from sentry_sdk.integrations.fastapi import FastApiIntegration
+            sentry_sdk.init(dsn=sentry_dsn, integrations=[FastApiIntegration()],
+                           traces_sample_rate=0.1, environment=os.getenv("ENVIRONMENT", "production"))
+        except ImportError:
+            pass
+
     logger.info("Initializing vector store...")
     try:
         app.state.vector_store = VectorStore()
@@ -54,6 +67,12 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+try:
+    from prometheus_fastapi_instrumentator import Instrumentator
+    Instrumentator().instrument(app).expose(app, endpoint="/metrics")
+except ImportError:
+    pass
 
 # ── Middlewares ────────────────────────────────────────────────────────────
 import os

@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 # In-memory store for tracking jobs.
 # NOTE: In production, this should be replaced by Redis.
-JOB_STORE: Dict[str, Dict[str, Any]] = {}
+from app.job_store import JOB_STORE
 
 
 async def run_research_pipeline(
@@ -34,7 +34,7 @@ async def run_research_pipeline(
     Updates JOB_STORE at each step and catches all exceptions.
     """
     try:
-        JOB_STORE[job_id] = {"status": "running", "error": None, "report": None}
+        JOB_STORE.set(job_id, {"status": "running", "error": None, "report": None})
         logger.info(f"Job {job_id} started for ticker {ticker}: {query}")
 
         # Initialize LLM Client
@@ -80,28 +80,33 @@ async def run_research_pipeline(
             save_findings(report_id=db_report_id, metrics=synthesis_result.get("metrics", {}))
 
         # Mark Complete
-        JOB_STORE[job_id]["status"] = "complete"
-        JOB_STORE[job_id]["report"] = report
-        JOB_STORE[job_id]["memory"] = agent_result.get("memory", [])
-        JOB_STORE[job_id]["elapsed_sec"] = agent_result.get("elapsed_sec", 0.0)
+        JOB_STORE.update(job_id, {"status": "complete"})
+        JOB_STORE.update(job_id, {"report": report})
+        JOB_STORE.update(job_id, {"memory": agent_result.get("memory", [])})
+        JOB_STORE.update(job_id, {"elapsed_sec": agent_result.get("elapsed_sec", 0.0)})
         
         # Phase 6: Evaluation & Dashboard
         logger.info(f"Job {job_id}: Running performance evaluation...")
-        eval_metrics = calculate_metrics(
-            report,
-            {
-                "memory": agent_result["memory"],
-                "elapsed_sec": agent_result.get("elapsed_sec", 0.0),
-            },
-        )
-        generate_dashboard(metrics=eval_metrics, output_path=f"evaluation/dashboard_{job_id}.html")
+        try:
+            run_data = {
+                "memory": agent_result.get("memory", []),
+                "elapsed_sec": agent_result.get("elapsed_sec", 0.0)
+            }
+            eval_metrics = calculate_metrics(report_dict=report, run_data=run_data)
+            generate_dashboard(
+                metrics=eval_metrics,
+                output_path=f"evaluation/dashboard_{job_id}.html"
+            )
+            logger.info(f"Job {job_id}: Evaluation complete.")
+        except Exception as eval_exc:
+            logger.warning(f"Job {job_id}: Evaluation step failed (non-fatal): {eval_exc}")
         
         logger.info(f"Job {job_id} successfully completed.")
 
     except Exception as exc:
         logger.error(f"Job {job_id} failed: {exc}", exc_info=True)
-        JOB_STORE[job_id] = {
+        JOB_STORE.set(job_id, {
             "status": "failed",
             "error": str(exc),
             "report": None,
-        }
+        })

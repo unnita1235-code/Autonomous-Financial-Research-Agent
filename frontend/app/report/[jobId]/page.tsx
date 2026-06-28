@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ChevronDown, ChevronRight, Copy, Check, Terminal, ArrowLeft, Loader2 } from "lucide-react";
 import ConflictAlert from "@/components/ConflictAlert";
+import FinancialChart from "@/components/FinancialChart";
 
 export default function ReportPage() {
   const [report, setReport] = useState<any>(null);
@@ -241,8 +242,10 @@ export default function ReportPage() {
               {isExpanded && (
                 <div className="p-8 pt-0 border-t border-white/5 animate-in slide-in-from-top-2 duration-300">
                   {sectionInfo.id === "financial_metrics" && metricsRows.length > 0 && (
-                    <div className="mb-8 overflow-x-auto">
-                      <table className="w-full text-left border-collapse min-w-[600px]">
+                    <>
+                      <FinancialChart rows={metricsRows} />
+                      <div className="mb-8 overflow-x-auto">
+                        <table className="w-full text-left border-collapse min-w-[600px]">
                         <thead>
                           <tr className="border-b border-white/10">
                             <th className="py-4 text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Metric</th>
@@ -263,6 +266,7 @@ export default function ReportPage() {
                         </tbody>
                       </table>
                     </div>
+                    </>
                   )}
 
                   {sectionInfo.id === "data_conflicts" && sectionData.conflict_items?.length > 0 && (
