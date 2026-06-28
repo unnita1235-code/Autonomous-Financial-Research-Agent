@@ -1,0 +1,586 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Quality Audit | ZeTheta Framework</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #020617;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border: rgba(51, 65, 85, 0.5);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-green: #10b981;
+            --accent-purple: #818cf8;
+            --accent-orange: #fb923c;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at top right, #1e293b, #020617);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .category-section {
+            margin-bottom: 50px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .category-id {
+            background: var(--accent-blue);
+            color: #000;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .category-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 10px 30px -10px rgba(56, 189, 248, 0.3);
+        }
+
+        .metric-id {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-blue);
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+
+        .metric-name {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            text-transform: capitalize;
+        }
+
+        .metric-value-container {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        .metric-unit {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+            transition: width 1s ease-out;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            box-shadow: 0 0 10px var(--accent-green);
+        }
+
+        .low-score .metric-value { color: #f87171; }
+        .low-score .status-badge { background: #f87171; box-shadow: 0 0 10px #f87171; }
+
+        footer {
+            margin-top: 80px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="subtitle">Autonomous Research Quality Audit</div>
+            <h1>Performance Dashboard</h1>
+        </header>
+
+        
+
+        
+        <div class="category-section">
+            <div class="category-header">
+                <span class="category-id">FA</span>
+                <span class="category-title">Factual Accuracy</span>
+            </div>
+            <div class="metrics-grid">
+                
+                    
+                    <div class="metric-card low-score">
+                        <div class="status-badge"></div>
+                        <div>
+                            <div class="metric-id">FA-1</div>
+                            <div class="metric-name">numerical accuracy</div>
+                        </div>
+                        <div class="metric-value-container">
+                            <div class="metric-value">29</div>
+                            <div class="metric-unit">%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 28.947368421052634%"></div>
+                        </div>
+                    </div>
+                    
+                
+                    
+                    <div class="metric-card ">
+                        <div class="status-badge"></div>
+                        <div>
+                            <div class="metric-id">FA-2</div>
+                            <div class="metric-name">citation accuracy</div>
+                        </div>
+                        <div class="metric-value-container">
+                            <div class="metric-value">100</div>
+                            <div class="metric-unit">%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100.0%"></div>
+                        </div>
+                    </div>
+                    
+                
+                    
+                    <div class="metric-card low-score">
+                        <div class="status-badge"></div>
+                        <div>
+                            <div class="metric-id">FA-3</div>
+                            <div class="metric-name">temporal accuracy</div>
+                        </div>
+                        <div class="metric-value-container">
+                            <div class="metric-value">0</div>
+                            <div class="metric-unit">%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0.0%"></div>
+                        </div>
+                    </div>
+                    
+                
+                    
+                    <div class="metric-card low-score">
+                        <div class="status-badge"></div>
+                        <div>
+                            <div class="metric-id">FA-4</div>
+                            <div class="metric-name">hallucination rate</div>
+                        </div>
+                        <div class="metric-value-container">
+                            <div class="metric-value">19</div>
+                            <div class="metric-unit">%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 18.75%"></div>
+                        </div>
+                    </div>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </div>
+        </div>
+        
+        <div class="category-section">
+            <div class="category-header">
+                <span class="category-id">SQ</span>
+                <span class="category-title">Source Quality</span>
+            </div>
+            <div class="metrics-grid">
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                    <div class="metric-card low-score">
+                        <div class="status-badge"></div>
+                        <div>
+                            <div class="metric-id">SQ-1</div>
+                            <div class="metric-name">source diversity</div>
+                        </div>
+                        <div class="metric-value-container">
+                            <div class="metric-value">0</div>
+                            <div class="metric-unit">%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0.0%"></div>
+                        </div>
+                    </div>
+                    
+                
+                    
+                    <div class="metric-card ">
+                        <div class="status-badge"></div>
+                        <div>
+                            <div class="metric-id">SQ-2</div>
+                            <div class="metric-name">source recency score</div>
+                        </div>
+                        <div class="metric-value-container">
+                            <div class="metric-value">100</div>
+                            <div class="metric-unit">%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100.0%"></div>
+                        </div>
+                    </div>
+                    
+                
+                    
+                    <div class="metric-card low-score">
+                        <div class="status-badge"></div>
+                        <div>
+                            <div class="metric-id">SQ-3</div>
+                            <div class="metric-name">source authority</div>
+                        </div>
+                        <div class="metric-value-container">
+                            <div class="metric-value">50</div>
+                            <div class="metric-unit">%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 50.0%"></div>
+                        </div>
+                    </div>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </div>
+        </div>
+        
+        <div class="category-section">
+            <div class="category-header">
+                <span class="category-id">AB</span>
+                <span class="category-title">Analytical Balance</span>
+            </div>
+            <div class="metrics-grid">
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                    <div class="metric-card ">
+                        <div class="status-badge"></div>
+                        <div>
+                            <div class="metric-id">AB-1</div>
+                            <div class="metric-name">conflict detection</div>
+                        </div>
+                        <div class="metric-value-container">
+                            <div class="metric-value">100</div>
+                            <div class="metric-unit">%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100.0%"></div>
+                        </div>
+                    </div>
+                    
+                
+                    
+                    <div class="metric-card ">
+                        <div class="status-badge"></div>
+                        <div>
+                            <div class="metric-id">AB-2</div>
+                            <div class="metric-name">resolution quality</div>
+                        </div>
+                        <div class="metric-value-container">
+                            <div class="metric-value">100</div>
+                            <div class="metric-unit">%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100.0%"></div>
+                        </div>
+                    </div>
+                    
+                
+                    
+                    <div class="metric-card low-score">
+                        <div class="status-badge"></div>
+                        <div>
+                            <div class="metric-id">AB-3</div>
+                            <div class="metric-name">bias neutrality</div>
+                        </div>
+                        <div class="metric-value-container">
+                            <div class="metric-value">0</div>
+                            <div class="metric-unit">%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0.0%"></div>
+                        </div>
+                    </div>
+                    
+                
+                    
+                    <div class="metric-card ">
+                        <div class="status-badge"></div>
+                        <div>
+                            <div class="metric-id">AB-4</div>
+                            <div class="metric-name">memory utilization</div>
+                        </div>
+                        <div class="metric-value-container">
+                            <div class="metric-value">88</div>
+                            <div class="metric-unit">%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 87.5%"></div>
+                        </div>
+                    </div>
+                    
+                
+                    
+                    <div class="metric-card low-score">
+                        <div class="status-badge"></div>
+                        <div>
+                            <div class="metric-id">AB-5</div>
+                            <div class="metric-name">tool efficiency</div>
+                        </div>
+                        <div class="metric-value-container">
+                            <div class="metric-value">12</div>
+                            <div class="metric-unit">%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 12.5%"></div>
+                        </div>
+                    </div>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </div>
+        </div>
+        
+        <div class="category-section">
+            <div class="category-header">
+                <span class="category-id">PF</span>
+                <span class="category-title">Performance</span>
+            </div>
+            <div class="metrics-grid">
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                    <div class="metric-card low-score">
+                        <div class="status-badge"></div>
+                        <div>
+                            <div class="metric-id">PF-1</div>
+                            <div class="metric-name">response time score</div>
+                        </div>
+                        <div class="metric-value-container">
+                            <div class="metric-value">0</div>
+                            <div class="metric-unit">%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0.0%"></div>
+                        </div>
+                    </div>
+                    
+                
+                    
+                    <div class="metric-card low-score">
+                        <div class="status-badge"></div>
+                        <div>
+                            <div class="metric-id">PF-2</div>
+                            <div class="metric-name">token efficiency</div>
+                        </div>
+                        <div class="metric-value-container">
+                            <div class="metric-value">58</div>
+                            <div class="metric-unit">%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 58.26215332700622%"></div>
+                        </div>
+                    </div>
+                    
+                
+                    
+                    <div class="metric-card ">
+                        <div class="status-badge"></div>
+                        <div>
+                            <div class="metric-id">PF-3</div>
+                            <div class="metric-name">error recovery</div>
+                        </div>
+                        <div class="metric-value-container">
+                            <div class="metric-value">100</div>
+                            <div class="metric-unit">%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100.0%"></div>
+                        </div>
+                    </div>
+                    
+                
+            </div>
+        </div>
+        
+
+        <footer>
+            ZeTheta Metric Framework © 2026. Automated evaluation of autonomous financial synthesis.
+        </footer>
+    </div>
+</body>
+</html>

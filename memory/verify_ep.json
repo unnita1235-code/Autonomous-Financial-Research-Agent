@@ -1,0 +1,24 @@
+[
+  {
+    "episode_id": "ep_0001",
+    "timestamp": "2026-05-07T03:01:26.201215Z",
+    "query": "test",
+    "query_type": "test",
+    "tools_used": [
+      "sec"
+    ],
+    "tools_succeeded": [
+      "sec"
+    ],
+    "tools_failed": [],
+    "fallbacks_triggered": [],
+    "strategy": "test",
+    "strategy_effectiveness": 0.9,
+    "synthesis_conflicts_found": 0,
+    "synthesis_conflicts_resolved": 0,
+    "total_duration_seconds": 0.0,
+    "error_patterns": [],
+    "lessons": [],
+    "metrics": {}
+  }
+]

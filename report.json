@@ -1,0 +1,66 @@
+{
+  "report_id": "2693fd18-f4ec-4b76-9bb1-12b1d63c818e",
+  "ticker": "AAPL",
+  "query": "Analyze Apple Q3 2024 performance",
+  "created_at": "2026-05-06T06:13:16.005911+00:00",
+  "sections": {
+    "executive_summary": {
+      "content": "Executive Summary: \nOur research report on AAPL presents key financial metrics with specified confidence levels. Revenue is reported at $111.2B, with a confidence level of 85% [Source: Sec Edgar]. Net Income and Earnings Per Share (EPS) are $29.6B and $2.02, respectively, also with an 85% confidence level [Source: Sec Edgar]. Additionally, the Sentiment Score is 0.28, based on news sources with a 70% confidence level. Notably, 0 data conflict(s) were detected in our analysis. The overall synthesis quality of this report is 81%. These findings provide a factual overview of AAPL's financial performance and sentiment metrics, based on the referenced sources and confidence levels.",
+      "data_quality": "high"
+    },
+    "financial_metrics": {
+      "content": "4 metrics extracted and reconciled.",
+      "rows": [
+        {
+          "metric": "Eps",
+          "value": "$2.02",
+          "source": "Sec Edgar",
+          "confidence": "85%"
+        },
+        {
+          "metric": "Net Income",
+          "value": "$29.6B",
+          "source": "Sec Edgar",
+          "confidence": "85%"
+        },
+        {
+          "metric": "Revenue",
+          "value": "$111.2B",
+          "source": "Sec Edgar",
+          "confidence": "85%"
+        },
+        {
+          "metric": "Sentiment Score",
+          "value": "0.28",
+          "source": "News",
+          "confidence": "70%"
+        }
+      ],
+      "data_quality": "high"
+    },
+    "management_insights": {
+      "content": "No transcript data available for management insights analysis.",
+      "data_quality": "low"
+    },
+    "risk_assessment": {
+      "content": "Risk Assessment:\n\nOur analysis of AAPL has identified two primary risk factors: Data Risk and Market Sentiment Risk. The Data Risk is associated with the synthesis quality of 81%, which, although relatively high, indicates a moderate risk of data inaccuracies or incomplete information. We have a high degree of confidence (100%) that the synthesis quality is 81%, but the risk lies in the potential for errors or omissions in the data that could impact our analysis. The confidence level in the data risk factor is therefore 81%, reflecting the synthesis quality.\n\nThe Market Sentiment Risk is driven by the Sentiment Score of 0.28, which suggests a slightly negative market sentiment towards AAPL. The confidence level in this sentiment score is 70%, as indicated by the source. This risk factor is categorized as Market Sentiment Risk, and we have a moderate level of confidence (70%) that the sentiment score accurately reflects market attitudes towards AAPL. \n\nThere is no Conflict Risk identified, as the number of data conflicts is 0 and no conflicts were detected. Overall, our risk assessment highlights the importance of considering both data quality and market sentiment when evaluating AAPL. We will continue to monitor these risk factors and update our analysis as new information becomes available.",
+      "data_quality": "medium"
+    },
+    "data_conflicts": {
+      "content": "No data conflicts detected across sources.",
+      "conflict_items": [],
+      "narrative": null,
+      "data_quality": "high"
+    },
+    "final_verdict": {
+      "content": "Sentiment (0.28) is at or below the 0.6 positive threshold. Holding is the prudent course.",
+      "signal": "Neutral",
+      "reason": "Sentiment (0.28) is at or below the 0.6 positive threshold. Holding is the prudent course.",
+      "data_quality": "high",
+      "confidence": "81%"
+    }
+  },
+  "markdown": "# Financial Research Report: AAPL\n\n> **Report ID:** `2693fd18-f4ec-4b76-9bb1-12b1d63c818e`\n> **Generated:** 2026-05-06T06:13:16.005911+00:00\n> **Query:** Analyze Apple Q3 2024 performance\n> **Overall Data Quality:** 81%\n\n---\n\n## 1. Executive Summary\n\n**Data Quality:** HIGH\n\nExecutive Summary: \nOur research report on AAPL presents key financial metrics with specified confidence levels. Revenue is reported at $111.2B, with a confidence level of 85% [Source: Sec Edgar]. Net Income and Earnings Per Share (EPS) are $29.6B and $2.02, respectively, also with an 85% confidence level [Source: Sec Edgar]. Additionally, the Sentiment Score is 0.28, based on news sources with a 70% confidence level. Notably, 0 data conflict(s) were detected in our analysis. The overall synthesis quality of this report is 81%. These findings provide a factual overview of AAPL's financial performance and sentiment metrics, based on the referenced sources and confidence levels.\n\n---\n\n## 2. Financial Metrics\n\n**Data Quality:** HIGH\n\n| Metric | Value | Source | Confidence |\n|--------|-------|--------|------------|\n| Eps | $2.02 | Sec Edgar | 85% |\n| Net Income | $29.6B | Sec Edgar | 85% |\n| Revenue | $111.2B | Sec Edgar | 85% |\n| Sentiment Score | 0.28 | News | 70% |\n---\n\n## 3. Management Insights\n\n**Data Quality:** LOW\n\nNo transcript data available for management insights analysis.\n\n---\n\n## 4. Risk Assessment\n\n**Data Quality:** MEDIUM\n\nRisk Assessment:\n\nOur analysis of AAPL has identified two primary risk factors: Data Risk and Market Sentiment Risk. The Data Risk is associated with the synthesis quality of 81%, which, although relatively high, indicates a moderate risk of data inaccuracies or incomplete information. We have a high degree of confidence (100%) that the synthesis quality is 81%, but the risk lies in the potential for errors or omissions in the data that could impact our analysis. The confidence level in the data risk factor is therefore 81%, reflecting the synthesis quality.\n\nThe Market Sentiment Risk is driven by the Sentiment Score of 0.28, which suggests a slightly negative market sentiment towards AAPL. The confidence level in this sentiment score is 70%, as indicated by the source. This risk factor is categorized as Market Sentiment Risk, and we have a moderate level of confidence (70%) that the sentiment score accurately reflects market attitudes towards AAPL. \n\nThere is no Conflict Risk identified, as the number of data conflicts is 0 and no conflicts were detected. Overall, our risk assessment highlights the importance of considering both data quality and market sentiment when evaluating AAPL. We will continue to monitor these risk factors and update our analysis as new information becomes available.\n\n---\n\n## 5. Data Conflicts\n\n**Data Quality:** HIGH\n\nNo data conflicts detected across sources.\n---\n\n## 6. Final Verdict\n\n**Data Quality:** HIGH\n\n**Signal: Neutral** | Confidence: 81% | Data Quality: High\n\nSentiment (0.28) is at or below the 0.6 positive threshold. Holding is the prudent course.\n\n---\n\n*Report generated by Autonomous Financial Research Agent. All metrics include source attribution and confidence scores. Claims marked \"Insufficient Data\" indicate synthesis quality below the 75% threshold required for actionable signals.*",
+  "synthesis_quality": 0.81,
+  "status": "complete"
+}

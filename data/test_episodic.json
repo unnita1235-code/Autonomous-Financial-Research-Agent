@@ -1,0 +1,27 @@
+[
+  {
+    "episode_id": "ep_0001",
+    "timestamp": "2026-05-07T02:19:23.644686Z",
+    "query": "Test Apple earnings",
+    "query_type": "earnings_analysis",
+    "tools_used": [
+      "sec",
+      "news"
+    ],
+    "tools_succeeded": [
+      "sec"
+    ],
+    "tools_failed": [
+      "news"
+    ],
+    "fallbacks_triggered": [],
+    "strategy": "sec_first",
+    "strategy_effectiveness": 0.8,
+    "synthesis_conflicts_found": 0,
+    "synthesis_conflicts_resolved": 0,
+    "total_duration_seconds": 0.0,
+    "error_patterns": [],
+    "lessons": [],
+    "metrics": {}
+  }
+]

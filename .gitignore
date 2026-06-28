@@ -1,0 +1,10 @@
+node_modules/
+.next/
+__pycache__/
+.env
+*.pyc
+.pytest_cache/
+.deepeval/
+memory/faiss_index.bin
+memory/metadata.json
+*.pkl

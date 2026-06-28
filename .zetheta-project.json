@@ -1,0 +1,20 @@
+{
+  "project_name": "Autonomous Financial Research Agent",
+  "project_code": "Project1A",
+  "student_name": "Unnita",
+  "student_id": "unnita1235",
+  "submission_date": "2026-05-07",
+  "version": "1.0.0",
+  "tool_count": 12,
+  "memory_layers": 3,
+  "challenges_completed": 8,
+  "errors_identified": 7,
+  "repository_url": "https://github.com/unnita1235-code/Autonomous-Financial-Research-Agent",
+  "deployment_url": "https://autonomous-financial-research-agent.onrender.com",
+  "tech_stack": {
+    "backend": "Python/FastAPI",
+    "reasoning": "ReAct Loop",
+    "memory": "FAISS TF-IDF Vector Store",
+    "synthesis": "Multi-source conflict resolution"
+  }
+}
