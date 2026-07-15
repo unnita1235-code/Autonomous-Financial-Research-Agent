@@ -1,3 +1,9 @@
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Frontend-brightgreen?style=for-the-badge)](https://autonomous-financial-research-agent.vercel.app) [![API](https://img.shields.io/badge/API-Render-46E3B7?style=for-the-badge)](https://autonomous-financial-research-agent.onrender.com) [![Stack](https://img.shields.io/badge/Stack-Python%20%7C%20FastAPI%20%7C%20FAISS-black?style=for-the-badge)](https://github.com/unnita1235-code/Autonomous-Financial-Research-Agent)
+
+## Live Preview
+
+[![Autonomous Financial Research Agent](https://image.thum.io/get/width/1280/https://autonomous-financial-research-agent.vercel.app)](https://autonomous-financial-research-agent.vercel.app)
+
 # Autonomous Financial Research Agent
 
 **Live Demo**
